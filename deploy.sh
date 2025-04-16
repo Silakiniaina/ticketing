@@ -3,7 +3,7 @@
 source build.sh
 
 src_dir="bin"
-web_dir="web"
+web_dir="web/jsp"
 lib_dir="lib"
 config_dir="config"
 
