@@ -2,6 +2,7 @@
 
 source build.sh
 
+assets_dir="assets"
 src_dir="bin"
 web_dir="web/jsp"
 lib_dir="lib"
@@ -12,11 +13,13 @@ target_dir="/opt/tomcat/webapps/"
 
 rm -rf "temp"
 mkdir "temp"
+mkdir "temp/assets"
 mkdir "temp/WEB-INF"
 mkdir "temp/WEB-INF/classes"
 mkdir "temp/WEB-INF/lib"
 mkdir "temp/WEB-INF/views"
 
+cp -r "$assets_dir"/* "temp/assets"
 cp -r "$lib_dir"/* "temp/WEB-INF/lib"
 cp -r "$src_dir"/* "temp/WEB-INF/classes"
 cp -r "$web_dir"/index.jsp "temp/"
