@@ -7,7 +7,7 @@ web_dir="web"
 lib_dir="lib"
 config_dir="config"
 
-target_name="Test_dash"
+target_name="ticketing"
 target_dir="/opt/tomcat/webapps/"
 
 rm -rf "temp"
