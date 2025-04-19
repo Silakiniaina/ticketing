@@ -2,11 +2,25 @@ package model;
 
 import java.sql.Date;
 
+import mg.dash.mvc.annotation.Email;
+import mg.dash.mvc.annotation.Numeric;
+import mg.dash.mvc.annotation.Required;
+
 public class User {
+    @Numeric
     private int id;
+
     private String firstName;
+
+    @Required
     private String lastName;
+
+    @Required
+    @Email
     private String email;
+
+    @mg.dash.mvc.annotation.Date
+    @Required
     private Date birthDate;
 
     /* -------------------------------------------------------------------------- */
