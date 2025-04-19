@@ -2,8 +2,13 @@ package error;
 
 public class AuthException extends Exception{
     
-    private String email; 
-    private String password;
+    private String email;
+    private String superMessage;
+
+    @Override
+    public String getMessage() {
+        return "Error while attempting to log with email : "+this.getEmail()+" : "+this.getSuperMessage();
+    }
 
     /* -------------------------------------------------------------------------- */
     /*                                   Getters                                  */
@@ -11,8 +16,8 @@ public class AuthException extends Exception{
     public String getEmail() {
         return email;
     }
-    public String getPassword() {
-        return password;
+    public String getSuperMessage() {
+        return superMessage;
     }
 
     /* -------------------------------------------------------------------------- */
@@ -21,8 +26,7 @@ public class AuthException extends Exception{
     public void setEmail(String email) {
         this.email = email;
     }
-    public void setPassword(String password) {
-        this.password = password;
+    public void setSuperMessage(String superMessage) {
+        this.superMessage = superMessage;
     }
-    
 }
