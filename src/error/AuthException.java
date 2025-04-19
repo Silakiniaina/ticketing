@@ -5,6 +5,17 @@ public class AuthException extends Exception{
     private String email;
     private String superMessage;
 
+    /* -------------------------------------------------------------------------- */
+    /*                                 Constructor                                */
+    /* -------------------------------------------------------------------------- */
+    public AuthException(String email, String superMessage){
+        this.setEmail(email);
+        this.setSuperMessage(superMessage);
+    }
+    
+    /* -------------------------------------------------------------------------- */
+    /*                                  Override                                  */
+    /* -------------------------------------------------------------------------- */
     @Override
     public String getMessage() {
         return "Error while attempting to log with email : "+this.getEmail()+" : "+this.getSuperMessage();
