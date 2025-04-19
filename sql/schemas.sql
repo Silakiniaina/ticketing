@@ -26,8 +26,8 @@ CREATE TABLE plane(
 
 CREATE TABLE flight(
    id INT,
-   departure_datetime DATETIME NOT NULL,
-   arrival_datetime DATETIME,
+   departure_datetime TIMESTAMP NOT NULL,
+   arrival_datetime TIMESTAMP,
    plane_id VARCHAR(50) NOT NULL,
    arrival_city_id INT NOT NULL,
    departure_city_id INT NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE gender(
 
 CREATE TABLE reservation(
    id INT,
-   reservation_datetime DATETIME DEFAULT NOW(),
+   reservation_datetime TIMESTAMP DEFAULT NOW(),
    price DECIMAL(18,2) NOT NULL,
    promotion DECIMAL(5,2) DEFAULT 0,
    user_id INT NOT NULL,
