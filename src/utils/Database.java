@@ -2,9 +2,15 @@ package utils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class Database{
 
+    /* -------------------------------------------------------------------------- */
+    /*                    Get a static connection for database                    */
+    /* -------------------------------------------------------------------------- */
     public static Connection getConnection() throws Exception{
         Connection c = null;
         try{
@@ -16,4 +22,22 @@ public class Database{
         }
         return c;
     }
+
+    /* -------------------------------------------------------------------------- */
+    /*                Close all opened ressources in a dao request                */
+    /* -------------------------------------------------------------------------- */
+    public static void closeRessources(ResultSet rs, PreparedStatement prstm , Connection c, Boolean isNewConnection) throws SQLException{
+        if(rs != null){
+            rs.close();
+        }
+        if(prstm != null){
+            prstm.close();
+        }
+        if( c != null){
+            if( isNewConnection != null && isNewConnection.booleanValue() == true){
+                c.close();
+            }
+        }
+    }
+
 }
