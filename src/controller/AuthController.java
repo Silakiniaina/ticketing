@@ -1,9 +1,15 @@
 package controller;
 
+import java.sql.SQLException;
+
+import error.AuthException;
 import mg.dash.mvc.annotation.Controller;
 import mg.dash.mvc.annotation.Get;
+import mg.dash.mvc.annotation.Post;
+import mg.dash.mvc.annotation.RequestParam;
 import mg.dash.mvc.annotation.Url;
 import mg.dash.mvc.handler.views.ModelView;
+import model.User;
 import service.UserService;
 
 @Controller
@@ -25,5 +31,30 @@ public class AuthController {
     @Url("/auth")
     public ModelView getAuthModelView(){
         return new ModelView("/WEB-INF/views/users/auth.jsp");
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                        Manage user authentification                        */
+    /* -------------------------------------------------------------------------- */
+    @Post
+    @Url("/auth")
+    public ModelView auth(@RequestParam("user") User userAuth){
+        ModelView mv = new ModelView();
+        try {
+            User connected = this.userService.login(userAuth.getEmail(), userAuth.getPassword(), null);
+            if(connected != null){
+                mv.setUrl("/WEB-INF/views/home.jsp");
+            }else{
+                throw new AuthException(userAuth.getEmail(), "User not found , please verify your password or the information that you provided");
+            }
+        } catch (AuthException e) {
+            mv.setUrl("/WEB-INF/views/users/auth.jsp");
+            mv.addObject("error", e.getMessage());
+        } catch (SQLException e){
+            mv.setUrl("/WEB-INF/views/users/auth.jsp");
+            mv.addObject("error", e.getMessage());
+        } finally{
+            return mv;
+        }
     }
 }
