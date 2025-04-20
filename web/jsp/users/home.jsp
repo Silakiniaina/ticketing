@@ -9,6 +9,7 @@
 
 <body>
     <div class="flex h-screen bg-gray-50 dark:bg-gray-900" :class="{ 'overflow-hidden': isSideMenuOpen}">
+        <%@ include file="/WEB-INF/views/partials/client-sidebar.jsp" %>
             <div class="flex flex-col flex-1">
                 <%@ include file="/WEB-INF/views/partials/navbar.jsp" %>
                     <main class="h-full pb-16 overflow-y-auto">
