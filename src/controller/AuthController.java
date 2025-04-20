@@ -32,7 +32,7 @@ public class AuthController {
     @Get
     @Url("/auth")
     public ModelView getAuthModelView(){
-        return new ModelView("/WEB-INF/views/users/auth.jsp");
+        return new ModelView("/WEB-INF/views/auth.jsp");
     }
 
     /* -------------------------------------------------------------------------- */
@@ -47,7 +47,11 @@ public class AuthController {
             if(connected != null){
                 session.setUser(connected);
                 session.setUserRoles(connected.getUserRoles());
-                mv.setUrl("/WEB-INF/views/home.jsp");
+                if(connected.getRole().equals("CLIENT")){
+                    mv.setUrl("/WEB-INF/views/users/home.jsp");
+                }else if(connected.getRole().equals("MANAGER")){
+                    mv.setUrl("/WEB-INF/views/managers/home.jsp");
+                }
             }else{
                 throw new AuthException(userAuth.getEmail(), "User not found , please verify your password or the information that you provided");
             }
