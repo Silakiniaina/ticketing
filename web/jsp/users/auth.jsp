@@ -25,7 +25,7 @@
                     <div class="flex items-center justify-center p-6 sm:p-12 md:w-1/2">
                         <form action="" method="post" class="w-full">
                             <% if (error != null) { %>
-                                <div class="error-message"><%= error %></div>
+                                <span class="text-xs text-red-600 dark:text-red-400"><%= error %></span>
                             <% } %>
                             <h1 class="mb-4 text-xl font-semibold text-gray-700 dark:text-gray-200">
                                 Login
@@ -40,7 +40,7 @@
                                     placeholder="Jane Doe"
                                 />
                                 <% if (ErrorHelper.getError(errors, "email") != null) { %>
-                                    <div class="error-message"><%= ErrorHelper.getError(errors, "email") %></div>
+                                    <span class="text-xs text-red-600 dark:text-red-400"><%= ErrorHelper.getError(errors, "email") %></span>
                                 <% } %>
                             </label>
                             <label class="block mt-4 text-sm">
@@ -53,7 +53,7 @@
                                     value="<%= ErrorHelper.getOldValue(request, "user.password") %>"
                                 />
                                 <% if (ErrorHelper.getError(errors, "password") != null) { %>
-                                    <div class="error-message"><%= ErrorHelper.getError(errors, "password") %></div>
+                                    <span class="text-xs text-red-600 dark:text-red-400"><%= ErrorHelper.getError(errors, "password") %></span>
                                 <% } %>
                             </label>
 
