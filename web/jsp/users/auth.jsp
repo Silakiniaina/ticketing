@@ -3,6 +3,7 @@
 <%@ page import="mg.dash.mvc.helper.ErrorHelper" %>
 <%
     HashMap<String, String> errors = (HashMap<String, String>) request.getAttribute("validationErrors");
+    String error = (String)request.getAttribute("error");
 %>
     <!DOCTYPE html>
     <html :class="{ 'theme-dark': dark }" x-data="data()" lang="en">
@@ -23,6 +24,9 @@
                     </div>
                     <div class="flex items-center justify-center p-6 sm:p-12 md:w-1/2">
                         <form action="" method="post" class="w-full">
+                            <% if (error != null) { %>
+                                <div class="error-message"><%= error %></div>
+                            <% } %>
                             <h1 class="mb-4 text-xl font-semibold text-gray-700 dark:text-gray-200">
                                 Login
                             </h1>
