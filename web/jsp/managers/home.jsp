@@ -14,7 +14,7 @@
                     <main class="h-full pb-16 overflow-y-auto">
                         <div class="container px-6 mx-auto grid">
                             <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-                                Welcome to ticketing <%= ((User)request.getSession().getAttribute("user")).getLastName() %>
+                                Welcome to ticketing' s Manager role <%= ((User)request.getSession().getAttribute("user")).getLastName() %>
                             </h2>
                             <!-- Add your page-specific content here -->
                         </div>
