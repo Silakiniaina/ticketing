@@ -18,7 +18,7 @@ public class UserDAO {
         boolean isNewConnection = false;
         PreparedStatement prstm = null; 
         ResultSet rs = null;
-        String query = "SELECT * FROM _user_ WHERE email = ? AND password = ?";
+        String query = "SELECT * FROM v_users WHERE email = ? AND password = ?";
         try {
             if(c == null){
                 c = Database.getConnection();
@@ -38,6 +38,7 @@ public class UserDAO {
                 connected.setFirstName(rs.getString("first_name"));
                 connected.setBirthDate(rs.getDate("birth_date"));
                 connected.setEmail(rs.getString("email"));
+                connected.setRole(rs.getString("role"));
             }
             return connected;
         } catch (Exception e) {
