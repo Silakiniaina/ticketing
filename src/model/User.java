@@ -26,6 +26,8 @@ public class User {
     @Required
     private String password;
 
+    private String role;
+
     /* -------------------------------------------------------------------------- */
     /*                                   Getters                                  */
     /* -------------------------------------------------------------------------- */
@@ -46,6 +48,9 @@ public class User {
     }
     public String getPassword() {
         return password;
+    }
+    public String getRole() {
+        return role;
     }
 
     /* -------------------------------------------------------------------------- */
