@@ -23,6 +23,9 @@ public class User {
     @Required
     private Date birthDate;
 
+    @Required
+    private String password;
+
     /* -------------------------------------------------------------------------- */
     /*                                   Getters                                  */
     /* -------------------------------------------------------------------------- */
@@ -40,6 +43,9 @@ public class User {
     }
     public Date getBirthDate() {
         return birthDate;
+    }
+    public String getPassword() {
+        return password;
     }
 
     /* -------------------------------------------------------------------------- */
@@ -59,5 +65,8 @@ public class User {
     }
     public void setBirthDate(Date birthDate) {
         this.birthDate = birthDate;
+    }
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
