@@ -1,4 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="mg.dash.mvc.helper.ErrorHelper" %>
+<%
+    HashMap<String, String> errors = (HashMap<String, String>) request.getAttribute("validationErrors");
+%>
     <!DOCTYPE html>
     <html :class="{ 'theme-dark': dark }" x-data="data()" lang="en">
 
@@ -24,14 +29,28 @@
                             <label class="block text-sm">
                                 <span class="text-gray-700 dark:text-gray-400">Email</span>
                                 <input
-                                    class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                                    placeholder="Jane Doe" />
+                                    type="email"
+                                    name="user.email"
+                                    value="<%= ErrorHelper.getOldValue(request, "user.email") %>"
+                                    class="<%= ErrorHelper.getError(errors, "email") != null ? "error" : "" %> block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                                    placeholder="Jane Doe"
+                                />
+                                <% if (ErrorHelper.getError(errors, "email") != null) { %>
+                                    <div class="error-message"><%= ErrorHelper.getError(errors, "email") %></div>
+                                <% } %>
                             </label>
                             <label class="block mt-4 text-sm">
                                 <span class="text-gray-700 dark:text-gray-400">Password</span>
                                 <input
-                                    class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                                    placeholder="***************" type="password" />
+                                    class="<%= ErrorHelper.getError(errors, "password") != null ? "error" : "" %> block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                                    placeholder="***************"
+                                    type="password"
+                                    name="user.password"
+                                    value="<%= ErrorHelper.getOldValue(request, "user.password") %>"
+                                />
+                                <% if (ErrorHelper.getError(errors, "password") != null) { %>
+                                    <div class="error-message"><%= ErrorHelper.getError(errors, "password") %></div>
+                                <% } %>
                             </label>
 
                             <!-- You should use a button here, as the anchor is only used for the example  -->
