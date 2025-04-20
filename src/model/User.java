@@ -1,6 +1,10 @@
 package model;
 
 import java.sql.Date;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import mg.dash.mvc.annotation.Email;
 import mg.dash.mvc.annotation.Numeric;
@@ -27,6 +31,13 @@ public class User {
     private String password;
 
     private String role;
+
+    /* -------------------------------------------------------------------------- */
+    /*                Function to get user role as a set of string                */
+    /* -------------------------------------------------------------------------- */
+    public Set<String> getUserRoles(){
+        return new HashSet<>(Collections.singletonList(this.getRole()));
+    }
 
     /* -------------------------------------------------------------------------- */
     /*                                   Getters                                  */
