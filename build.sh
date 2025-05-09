@@ -7,6 +7,9 @@ lib_dir="$current_dir/lib"
 src_dir="$current_dir/src"
 temp_dir="$current_dir/src/temp"
 
+rm -R "$bin_dir"
+mkdir "$bin_dir"
+
 if [ ! -d "$temp_dir" ]; then
   mkdir "$temp_dir"
 fi
