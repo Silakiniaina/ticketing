@@ -53,6 +53,13 @@
                                 <p>List Flights</p>
                             </a>
                         </li>
+
+                        <li class="nav-item">
+                            <a href="<%= request.getContextPath() %>/flights/add" class="nav-link <%= request.getRequestURI().contains("/flights/add") ? "active" : "" %>">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add Flight</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
             </ul>
