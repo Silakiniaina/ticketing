@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="model.User" %>
 
 <!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
@@ -16,7 +17,7 @@
                 <img src="<%= request.getContextPath() %>/assets/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block"></a>
+                <a href="#" class="d-block"><%= ((User)request.getSession().getAttribute("user")).getLastName() %></a>
             </div>
         </div>
 
