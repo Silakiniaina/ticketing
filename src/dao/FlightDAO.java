@@ -43,7 +43,7 @@ public class FlightDAO {
             while(rs.next()){
                 Flight f = new Flight();
                 f.setId(rs.getInt("id"));
-                f.setPlane(planeDAO.getById(c, f.getId()));
+                f.setPlane(planeDAO.getById(c, rs.getInt("plane_id")));
                 f.setDepartureCity(cityDAO.getById(c, rs.getInt("departure_city_id")));
                 f.setArrivalCity(cityDAO.getById(c, rs.getInt("arrival_city_id")));
                 f.setDepartureDatetime(rs.getTimestamp("departure_datetime"));
@@ -55,6 +55,38 @@ public class FlightDAO {
             throw new DaoException(query, e.getMessage());
         }finally{
             Database.closeRessources(rs, prstm, c, Boolean.valueOf(isNewConnection));
+        }
+    }
+
+
+    /* -------------------------------------------------------------------------- */
+    /*                               Insert a flight                              */
+    /* -------------------------------------------------------------------------- */
+    public void insert(Connection c, Flight f)throws DaoException, SQLException{
+        boolean isNewConnection = false;
+        PreparedStatement prstm = null; 
+        String query = "INSERT INTO flight(departure_datetime, arrival_datetime, plane_id, arrival_city_id, departure_city_id) VALUES(?,?,?,?,?)";
+        try {
+            if(c == null){
+                c = Database.getActiveConnection();
+                isNewConnection = true;
+            }
+            c.setAutoCommit(false);
+            prstm = c.prepareStatement(query);
+            prstm.setTimestamp(1, f.getDepartureDatetime());
+            prstm.setTimestamp(2, f.getArrivalDatetime());
+            prstm.setInt(3, f.getPlane().getId());
+            prstm.setInt(4, f.getArrivalCity().getId());
+            prstm.setInt(5, f.getDepartureCity().getId());
+            int affectedRow = prstm.executeUpdate();
+            if(affectedRow > 0){
+                c.commit();
+            }
+        } catch (Exception e) {
+            c.rollback();
+            throw new DaoException(query, e.getMessage());
+        } finally{
+            Database.closeRessources(null, prstm, c, Boolean.valueOf(isNewConnection));
         }
     }
 
