@@ -15,8 +15,8 @@
                 <div class="card-body">
                     <form method="post" action="<%= request.getContextPath() %>/flights">
                         <div class="form-group">
-                            <label for="employee">Plane <span class="text-danger">*</span></label>
-                            <select name="employee" class="form-control" id="employee" required>
+                            <label for="plane">Plane <span class="text-danger">*</span></label>
+                            <select name="flightArg.planeId" class="form-control" id="plane" required>
                                 <option value="">-- Select Plane --</option>
                                 <% if (planes != null) {
                                     for (Plane plane : planes) {
@@ -27,7 +27,7 @@
                         </div>
                         <div class="form-group">
                             <label for="departureCity">Departure City <span class="text-danger">*</span></label>
-                            <select name="departureCity" class="form-control" id="departureCity" required>
+                            <select name="flightArg.departureCityId" class="form-control" id="departureCity" required>
                                 <option value="">-- Select city --</option>
                                 <% if (cities != null) {
                                     for (City city : cities) {
@@ -38,7 +38,7 @@
                         </div>
                         <div class="form-group">
                             <label for="arrivalCity">Arrival City <span class="text-danger">*</span></label>
-                            <select name="arrivalCity" class="form-control" id="arrivalCity" required>
+                            <select name="flightArg.arrivalCityId" class="form-control" id="arrivalCity" required>
                                 <option value="">-- Select city --</option>
                                 <% if (cities != null) {
                                     for (City city : cities) {
@@ -49,12 +49,12 @@
                         </div>
                         <div class="form-group">
                             <label for="departureDatetime">Departure Datetime</label>
-                            <input type="datetime-local" name="departureDatetime" id="departureDatetime" class="form-control" >
+                            <input type="datetime-local" name="flightArg.departureDatetime" id="departureDatetime" class="form-control" >
                             
                         </div>
                         <div class="form-group">
                             <label for="arrivalDatetime">Arrival Datetime</label>
-                            <input type="datetime-local" name="arrivalDatetime" id="arrivalDatetime" class="form-control" >
+                            <input type="datetime-local" name="flightArg.arrivalDatetime" id="arrivalDatetime" class="form-control" >
                             
                         </div>
                         <div class="form-group text-center">
