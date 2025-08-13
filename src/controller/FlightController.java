@@ -3,12 +3,15 @@ package controller;
 import java.sql.SQLException;
 import java.util.List;
 
+import dto.FlightArg;
 import exception.DaoException;
 import lombok.Getter;
 import lombok.Setter;
 import mg.dash.mvc.annotation.Auth;
 import mg.dash.mvc.annotation.Controller;
 import mg.dash.mvc.annotation.Get;
+import mg.dash.mvc.annotation.Post;
+import mg.dash.mvc.annotation.RequestParam;
 import mg.dash.mvc.annotation.Url;
 import mg.dash.mvc.handler.views.ModelView;
 import model.City;
@@ -89,5 +92,31 @@ public class FlightController{
             mv.addObject("error", "Unexepted error : "+ex.getMessage());
         }
         return mv;
+    }
+
+    @Post
+    @Url("/flights")
+    public ModelView addFlight(@RequestParam("flightArg") FlightArg fArg){
+        if(fArg != null){
+            ModelView mv = new ModelView();
+            mv.setUrl("flights");
+            try {
+                Flight flight = flightService.injectValues(new Flight(), fArg);
+                flightService.addFlight(flight);
+                mv.setRedirect(true);
+                mv.addObject("success", "Flight created successfully");
+            } catch (DaoException daoEx) {
+                mv.addObject("error", "Error on DAO while fecthing flight list : "+daoEx.getMessage());
+            } catch (SQLException sqlEx){
+                mv.addObject("error", "Error on SQL while fetching flight list : "+sqlEx.getMessage());
+            } catch (Exception ex){
+                mv.addObject("error", "Unexepted error : "+ex.getMessage());
+            }
+            return mv;
+        }else{
+            ModelView mv = new ModelView("/flights/add");
+            mv.addObject("error", "Information for flight is null");
+            return mv;
+        }
     }
 }
