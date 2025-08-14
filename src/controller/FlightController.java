@@ -146,4 +146,36 @@ public class FlightController{
         }
         return mv;
     }
+
+    /* -------------------------------------------------------------------------- */
+    /*                               Delete a flight                              */
+    /* -------------------------------------------------------------------------- */
+    @Get
+    @Url("/flights/delete")
+    public ModelView deleteFlight(@RequestParam("flight") UpdateArg f){
+        ModelView mv = new ModelView();
+        mv.setUrl("/ticketing/flights");
+        if (f != null) {
+            try {
+                if (f.getId() != 0) {
+                    flightService.deleteFlight(flightService.getById(f.getId()));
+                } else{
+                    throw new Exception("Flight to delete not found");
+                }
+                mv.setRedirect(true);
+                System.out.println("Redirecting to: " + mv.getUrl());
+            } catch (NumberFormatException nfe) {
+                mv.addObject("error", "Invalid flight ID format: " + nfe.getMessage());
+            } catch (DaoException daoEx) {
+                mv.addObject("error", "Error on DAO while deleting flight : " + daoEx.getMessage());
+            } catch (SQLException sqlEx) {
+                mv.addObject("error", "Error on SQL while deleting flight : " + sqlEx.getMessage());
+            } catch (Exception ex) {
+                mv.addObject("error", "Unexpected error: " + ex.getMessage());
+            }
+        } else {
+            mv.addObject("error", "Information for flight is null");
+        }
+        return mv;
+    }
 }
