@@ -38,14 +38,14 @@
                                         <%= flight.getArrivalCity().getLabel() != null ? flight.getArrivalCity().getLabel() : "N/A" %>
                                     </td>
                                     <td>
-                                        <a href="#"
+                                        <a href="<%= request.getContextPath() %>/flights/update?updateArg.id=<%= flight.getId() %>"
                                            class="btn btn-info btn-sm">
                                             <i class="fas fa-pen"></i>
                                         </a>
                                         <a href="#"
                                            class="btn btn-danger btn-sm">
                                             <i class="fas fa-trash"></i>
-                                        </a>
+                                        </a> 
                                     </td>
                                 </tr>
                         <% }} else { %>
