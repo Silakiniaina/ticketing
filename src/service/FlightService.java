@@ -41,11 +41,27 @@ public class FlightService {
     }
 
     /* -------------------------------------------------------------------------- */
+    /*                           Get a flight by its id                           */
+    /* -------------------------------------------------------------------------- */
+    public Flight getById(int id) throws DaoException,SQLException,Exception{
+        Connection c = Database.getActiveConnection();
+        return flightDAO.getById(c, id);
+    }
+
+    /* -------------------------------------------------------------------------- */
     /*                                Add a flight                                */
     /* -------------------------------------------------------------------------- */
     public void addFlight(Flight f) throws DaoException, SQLException, Exception{
         Connection c = Database.getActiveConnection();
         flightDAO.insert(c, f);
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                                Update flight                               */
+    /* -------------------------------------------------------------------------- */
+    public void updateFlight(Flight f) throws DaoException, SQLException, Exception{
+        Connection c = Database.getActiveConnection();
+        flightDAO.update(c, f);
     }
 
     /* -------------------------------------------------------------------------- */
@@ -56,6 +72,7 @@ public class FlightService {
         if(f == null){
             throw new Exception("Cannot inject values on a flight that is null");
         }
+        f.setId(args.getId());
         f.setPlane(planeDAO.getById(c, args.getPlaneId()));
         f.setArrivalCity(cityDAO.getById(c, args.getArrivalCityId()));
         f.setDepartureCity(cityDAO.getById(c, args.getDepartureCityId()));
