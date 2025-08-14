@@ -58,6 +58,42 @@ public class FlightDAO {
         }
     }
 
+    /* -------------------------------------------------------------------------- */
+    /*                           Get a flight by its id                           */
+    /* -------------------------------------------------------------------------- */
+    public Flight getById(Connection c, int id)throws DaoException, SQLException{
+        Flight result = null;
+        boolean isNewConnection = false;
+        PreparedStatement prstm = null; 
+        ResultSet rs = null;
+        String query = "SELECT * FROM flight WHERE id = ?";
+        try {
+            if(c == null){
+                c = Database.getActiveConnection();
+                isNewConnection = true;
+            }
+            prstm = c.prepareStatement(query);
+            prstm.setInt(1, id);
+            rs = prstm.executeQuery();
+            if(rs.next()){
+                result = new Flight();
+                result.setId(rs.getInt("id"));
+                result.setPlane(planeDAO.getById(c, rs.getInt("plane_id")));
+                result.setDepartureCity(cityDAO.getById(c, rs.getInt("departure_city_id")));
+                result.setArrivalCity(cityDAO.getById(c, rs.getInt("arrival_city_id")));
+                result.setDepartureDatetime(rs.getTimestamp("departure_datetime"));
+                result.setArrivalDatetime(rs.getTimestamp("arrival_datetime"));
+            }
+            return result;
+        } catch (Exception e) {
+            throw new DaoException(query, e.getMessage());
+        }finally{
+            Database.closeRessources(rs, prstm, c, Boolean.valueOf(isNewConnection));
+        }
+    }
+
+
+
 
     /* -------------------------------------------------------------------------- */
     /*                               Insert a flight                              */
@@ -89,5 +125,38 @@ public class FlightDAO {
             Database.closeRessources(null, prstm, c, Boolean.valueOf(isNewConnection));
         }
     }
+    
+    /* -------------------------------------------------------------------------- */
+    /*                               Update a flight                              */
+    /* -------------------------------------------------------------------------- */
+    public void update(Connection c, Flight f)throws DaoException, SQLException{
+        boolean isNewConnection = false;
+        PreparedStatement prstm = null; 
+        String query = "UPDATE flight SET departure_datetime = ?, arrival_datetime = ?, plane_id = ?, arrival_city_id = ?, departure_city_id = ? WHERE id = ?";
+        try {
+            if(c == null){
+                c = Database.getActiveConnection();
+                isNewConnection = true;
+            }
+            c.setAutoCommit(false);
+            prstm = c.prepareStatement(query);
+            prstm.setTimestamp(1, f.getDepartureDatetime());
+            prstm.setTimestamp(2, f.getArrivalDatetime());
+            prstm.setInt(3, f.getPlane().getId());
+            prstm.setInt(4, f.getArrivalCity().getId());
+            prstm.setInt(5, f.getDepartureCity().getId());
+            prstm.setInt(6, f.getId());
+            int affectedRow = prstm.executeUpdate();
+            if(affectedRow > 0){
+                c.commit();
+            }
+        } catch (Exception e) {
+            c.rollback();
+            throw new DaoException(query, e.getMessage());
+        } finally{
+            Database.closeRessources(null, prstm, c, Boolean.valueOf(isNewConnection));
+        }
+    }
+
 
 }
