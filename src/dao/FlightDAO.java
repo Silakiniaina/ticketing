@@ -159,4 +159,30 @@ public class FlightDAO {
     }
 
 
+    /* -------------------------------------------------------------------------- */
+    /*                               Delete a flight                              */
+    /* -------------------------------------------------------------------------- */
+    public void delete(Connection c, Flight f)throws DaoException, SQLException{
+        boolean isNewConnection = false;
+        PreparedStatement prstm = null; 
+        String query = "DELETE FROM flight WHERE id = ?";
+        try {
+            if(c == null){
+                c = Database.getActiveConnection();
+                isNewConnection = true;
+            }
+            c.setAutoCommit(false);
+            prstm = c.prepareStatement(query);
+            prstm.setInt(1, f.getId());
+            int affectedRow = prstm.executeUpdate();
+            if(affectedRow > 0){
+                c.commit();
+            }
+        } catch (Exception e) {
+            c.rollback();
+            throw new DaoException(query, e.getMessage());
+        } finally{
+            Database.closeRessources(null, prstm, c, Boolean.valueOf(isNewConnection));
+        }
+    }
 }
