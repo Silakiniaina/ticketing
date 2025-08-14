@@ -13,6 +13,9 @@ import mg.dash.mvc.annotation.Required;
 @NoArgsConstructor
 public class FlightArg {
 
+    @Numeric
+    private int id;
+
     @Required
     @Numeric
     private int planeId;
