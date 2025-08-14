@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import dto.FlightArg;
+import dto.UpdateArg;
 import exception.DaoException;
 import lombok.Getter;
 import lombok.Setter;
@@ -95,28 +96,54 @@ public class FlightController{
     }
 
     @Post
-    @Url("/flights")
-    public ModelView addFlight(@RequestParam("flightArg") FlightArg fArg){
-        if(fArg != null){
-            ModelView mv = new ModelView();
-            mv.setUrl("flights");
+    @Url("/flights/add")
+    public ModelView addFlight(@RequestParam("flightArg") FlightArg fArg) {
+        ModelView mv = new ModelView();
+        mv.setUrl("add");
+        if (fArg != null) {
             try {
                 Flight flight = flightService.injectValues(new Flight(), fArg);
-                flightService.addFlight(flight);
+                if (fArg.getId() != 0) {
+                    flightService.updateFlight(flight);
+                    mv.addObject("success", "Flight updated successfully");
+                } else {
+                    flightService.addFlight(flight);
+                    mv.addObject("success", "Flight created successfully");
+                }
                 mv.setRedirect(true);
-                mv.addObject("success", "Flight created successfully");
+                System.out.println("Redirecting to: " + mv.getUrl());
+            } catch (NumberFormatException nfe) {
+                mv.addObject("error", "Invalid flight ID format: " + nfe.getMessage());
             } catch (DaoException daoEx) {
-                mv.addObject("error", "Error on DAO while fecthing flight list : "+daoEx.getMessage());
-            } catch (SQLException sqlEx){
-                mv.addObject("error", "Error on SQL while fetching flight list : "+sqlEx.getMessage());
-            } catch (Exception ex){
-                mv.addObject("error", "Unexepted error : "+ex.getMessage());
+                mv.addObject("error", "Error on DAO while fetching flight list: " + daoEx.getMessage());
+            } catch (SQLException sqlEx) {
+                mv.addObject("error", "Error on SQL while fetching flight list: " + sqlEx.getMessage());
+            } catch (Exception ex) {
+                mv.addObject("error", "Unexpected error: " + ex.getMessage());
             }
-            return mv;
-        }else{
-            ModelView mv = new ModelView("/flights/add");
+        } else {
             mv.addObject("error", "Information for flight is null");
-            return mv;
         }
+        return mv;
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                                Update flight                               */
+    /* -------------------------------------------------------------------------- */
+    @Get
+    @Url("/flights/update")
+    public ModelView showUpdateForm(@RequestParam("updateArg") UpdateArg updateArg){
+        ModelView mv = new ModelView("/flights/add");
+        try {
+            System.out.println(updateArg);
+            if(updateArg == null){
+                throw new Exception("Cannot update a flight with id null");
+            }
+            Flight f = flightService.getById(updateArg.getId());
+            mv.addObject("flight", f);
+        } catch (Exception e) {
+            mv.addObject("error", e.getMessage());
+        }
+        return mv;
     }
 }
