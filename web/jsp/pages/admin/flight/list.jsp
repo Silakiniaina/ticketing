@@ -42,7 +42,7 @@
                                            class="btn btn-info btn-sm">
                                             <i class="fas fa-pen"></i>
                                         </a>
-                                        <a href="#"
+                                        <a href="<%= request.getContextPath() %>/flights/delete?flight.id=<%= flight.getId() %>"
                                            class="btn btn-danger btn-sm">
                                             <i class="fas fa-trash"></i>
                                         </a> 
