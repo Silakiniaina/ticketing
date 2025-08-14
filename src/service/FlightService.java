@@ -65,6 +65,14 @@ public class FlightService {
     }
 
     /* -------------------------------------------------------------------------- */
+    /*                               Delete a flight                              */
+    /* -------------------------------------------------------------------------- */
+    public void deleteFlight(Flight f) throws DaoException, SQLException, Exception{
+        Connection c = Database.getActiveConnection();
+        flightDAO.delete(c, f);
+    }
+
+    /* -------------------------------------------------------------------------- */
     /*                  Inject flightArg value on Flight instance                 */
     /* -------------------------------------------------------------------------- */
     public Flight injectValues(Flight f, FlightArg args)throws DaoException, SQLException, Exception{
