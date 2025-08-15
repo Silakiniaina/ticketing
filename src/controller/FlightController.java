@@ -57,9 +57,37 @@ public class FlightController{
             mv.addObject("pageTitle", pageTitle);
             mv.addObject("contentPage", "pages/admin/flight/list.jsp");
             mv.addObject("flights", flights);
+            mv.addObject("planes", planeService.getAll());
+            mv.addObject("cities", cityService.getAll());
         } catch (DaoException daoEx) {
             mv.addObject("error", "Error on DAO while fecthing flight list : "+daoEx.getMessage());
             daoEx.printStackTrace();
+        } catch (SQLException sqlEx){
+            mv.addObject("error", "Error on SQL while fetching flight list : "+sqlEx.getMessage());
+        } catch (Exception ex){
+            mv.addObject("error", "Unexepted error : "+ex.getMessage());
+        }
+        return mv;
+    }
+
+        /* -------------------------------------------------------------------------- */
+    /*                            Show fligth list page                           */
+    /* -------------------------------------------------------------------------- */
+    @Get
+    @Url("/flights-search")
+    public ModelView showSearchResult(@RequestParam("flightArg") FlightArg flightArg){
+        ModelView mv = new ModelView("/WEB-INF/views/layout/admin-layout.jsp");
+        try {
+            List<Flight> flights = flightService.search(flightArg);
+            mv.addObject("flightArg", flightArg);
+            mv.addObject("flightsFilter", flights);
+            String pageTitle  = "List of "+flights.size()+ " flights";
+            mv.addObject("pageTitle", pageTitle);
+            mv.addObject("contentPage", "pages/admin/flight/list.jsp");
+            mv.addObject("planes", planeService.getAll());
+            mv.addObject("cities", cityService.getAll());
+        } catch (DaoException daoEx) {
+            mv.addObject("error", "Error on DAO while fecthing flight list : "+daoEx.getMessage());
         } catch (SQLException sqlEx){
             mv.addObject("error", "Error on SQL while fetching flight list : "+sqlEx.getMessage());
         } catch (Exception ex){

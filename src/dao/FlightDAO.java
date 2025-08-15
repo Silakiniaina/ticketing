@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import dto.FlightArg;
 import exception.DaoException;
 import model.Flight;
 import util.Database;
@@ -183,6 +184,74 @@ public class FlightDAO {
             throw new DaoException(query, e.getMessage());
         } finally{
             Database.closeRessources(null, prstm, c, Boolean.valueOf(isNewConnection));
+        }
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                                Search flight                               */
+    /* -------------------------------------------------------------------------- */
+    public List<Flight> searchFlights(Connection c, FlightArg args) throws DaoException, SQLException {
+        List<Flight> result = null;
+        boolean isNewConnection = false;
+        PreparedStatement prstm = null;
+        ResultSet rs = null;
+        
+        try {
+            if (c == null) {
+                c = Database.getActiveConnection();
+                isNewConnection = true;
+            }
+
+            StringBuilder query = new StringBuilder("SELECT * FROM flight WHERE 1=1");
+            List<Object> params = new ArrayList<>();
+
+            if (args.getPlaneId() != 0) {
+                query.append(" AND plane_id = ?");
+                params.add(args.getPlaneId());
+            }
+            if (args.getDepartureCityId() != 0) {
+                query.append(" AND departure_city_id = ?");
+                params.add(args.getDepartureCityId());
+            }
+            if (args.getArrivalCityId() != 0) {
+                query.append(" AND arrival_city_id = ?");
+                params.add(args.getArrivalCityId());
+            }
+            if (args.getDepartureDatetime() != null && !args.getDepartureDatetime().isEmpty()) {
+                query.append(" AND DATE(departure_datetime) = ?");
+                params.add(args.getDepartureDatetime());
+            }
+            if (args.getArrivalDatetime() != null && !args.getArrivalDatetime().isEmpty()) {
+                query.append(" AND DATE(arrival_datetime) = ?");
+                params.add(args.getArrivalDatetime());
+            }
+
+            prstm = c.prepareStatement(query.toString());
+            for (int i = 0; i < params.size(); i++) {
+                prstm.setObject(i + 1, params.get(i));
+            }
+
+            rs = prstm.executeQuery();
+            if(rs.wasNull()){
+                return null;
+            }else{
+                result = new ArrayList<>();
+                while (rs.next()) {
+                    Flight f = new Flight();
+                    f.setId(rs.getInt("id"));
+                    f.setPlane(planeDAO.getById(c, rs.getInt("plane_id")));
+                    f.setDepartureCity(cityDAO.getById(c, rs.getInt("departure_city_id")));
+                    f.setArrivalCity(cityDAO.getById(c, rs.getInt("arrival_city_id")));
+                    f.setDepartureDatetime(rs.getTimestamp("departure_datetime"));
+                    f.setArrivalDatetime(rs.getTimestamp("arrival_datetime"));
+                    result.add(f);
+                }
+                return result;
+            }
+        } catch (Exception e) {
+            throw new DaoException("Search flights query", e.getMessage());
+        } finally {
+            Database.closeRessources(rs, prstm, c, Boolean.valueOf(isNewConnection));
         }
     }
 }

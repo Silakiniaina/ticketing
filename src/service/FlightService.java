@@ -41,6 +41,14 @@ public class FlightService {
     }
 
     /* -------------------------------------------------------------------------- */
+    /*                                Search flight                               */
+    /* -------------------------------------------------------------------------- */
+    public List<Flight> search(FlightArg arg) throws DaoException,SQLException,Exception{
+        Connection c = Database.getActiveConnection();
+        return flightDAO.searchFlights(c,arg);
+    }
+
+    /* -------------------------------------------------------------------------- */
     /*                           Get a flight by its id                           */
     /* -------------------------------------------------------------------------- */
     public Flight getById(int id) throws DaoException,SQLException,Exception{
