@@ -139,6 +139,10 @@
                                                         class="btn btn-danger btn-sm">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
+                                                    <a href="<%= request.getContextPath() %>/flight-promotions/add?flight.id=<%= flight.getId() %>"
+                                                        class="btn btn-warning btn-sm">
+                                                        <i class="fas fa-circle"></i>
+                                                    </a>
                                                 </td>
                                             </tr>
                                             <% }} else { %>
