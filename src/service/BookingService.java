@@ -51,4 +51,28 @@ public class BookingService {
         Connection c = Database.getActiveConnection();
         return bookingDAO.isBookingOnTime(c, b);
     }
+
+    /* -------------------------------------------------------------------------- */
+    /*                             Cancel a booking                               */
+    /* -------------------------------------------------------------------------- */
+    public void cancelBooking(int bookingId) throws DaoException, SQLException, Exception {
+        Connection c = Database.getActiveConnection();
+        bookingDAO.cancelBooking(c, bookingId);
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*               Check if booking cancellation is on time                     */
+    /* -------------------------------------------------------------------------- */
+    public boolean isBookingCancellationOnTime(int bookingId) throws DaoException, SQLException, Exception {
+        Connection c = Database.getActiveConnection();
+        return bookingDAO.isBookingCancellationOnTime(c, bookingId);
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                        Get all bookings by user ID                         */
+    /* -------------------------------------------------------------------------- */
+    public List<Booking> getBookingByUserId(int userId) throws DaoException, SQLException, Exception {
+        Connection c = Database.getActiveConnection();
+        return bookingDAO.getBookingByUserId(c, userId);
+    }
 }
