@@ -112,3 +112,8 @@ CREATE TABLE flight_price_type_seat(
    FOREIGN KEY(type_seat_id) REFERENCES type_seat(id),
    FOREIGN KEY(flight_id) REFERENCES flight(id)
 );
+
+CREATE TABLE reservation_setting(
+   hour_limit_reserving INT, 
+   hour_limit_canceling INT
+);
