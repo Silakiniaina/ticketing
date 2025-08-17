@@ -33,6 +33,15 @@
                         </p>
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a href="<%= request.getContextPath() %>/user/flights" class="nav-link">
+                        <i class="nav-icon fas fa-plane"></i>
+                        <p>
+                            Flight
+                        </p>
+                    </a>
+                </li>
             </ul>
         </nav>
         <!-- /.sidebar-menu -->
