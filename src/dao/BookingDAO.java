@@ -4,17 +4,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import exception.DaoException;
 import model.Booking;
+import model.ReservationSetting;
 import util.Database;
 
 public class BookingDAO {
 
     private UserDAO userDAO;
     private FlightDAO flightDAO;
+    private ReservationSettingDAO reservationSettingDAO;
 
     /* -------------------------------------------------------------------------- */
     /*                                 Constructor                                */
@@ -22,6 +25,7 @@ public class BookingDAO {
     public BookingDAO() {
         this.userDAO = new UserDAO();
         this.flightDAO = new FlightDAO();
+        this.reservationSettingDAO = new ReservationSettingDAO();
     }
 
     /* -------------------------------------------------------------------------- */
@@ -120,6 +124,31 @@ public class BookingDAO {
             throw new DaoException(query, e.getMessage());
         } finally {
             Database.closeRessources(generatedKeys, prstm, c, Boolean.valueOf(isNewConnection));
+        }
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                   Check if booking is on time                              */
+    /* -------------------------------------------------------------------------- */
+    public boolean isBookingOnTime(Connection c, Booking b) throws DaoException, SQLException {
+        try {
+            ReservationSetting settings = reservationSettingDAO.getSetting(c);
+            if (b.getFlight() == null || settings == null || b.getBookingDatetime() == null) {
+                return false;
+            }
+
+            LocalDateTime bookingDateTime = b.getBookingDatetime().toLocalDateTime();
+            LocalDateTime departureDateTime = b.getFlight().getDepartureDatetime().toLocalDateTime();
+            int hourLimitReserving = settings.getHourLimitReserving();
+
+            if (departureDateTime.isBefore(bookingDateTime) || 
+                departureDateTime.minusHours(hourLimitReserving).isBefore(bookingDateTime) ||
+                departureDateTime.minusHours(hourLimitReserving).isEqual(bookingDateTime)) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            throw new DaoException("Check booking on time", e.getMessage());
         }
     }
 }
