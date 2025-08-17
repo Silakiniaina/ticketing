@@ -62,6 +62,18 @@
                         </li>
                     </ul>
                 </li>
+
+                <!-- ----------------------------------------------------------------------- -->
+                <!--                           Reservation setting                           -->
+                <!-- ----------------------------------------------------------------------- -->
+                <li class="nav-item">
+                    <a href="<%= request.getContextPath() %>/reservation-setting/add" class="nav-link">
+                        <i class="nav-icon fas fa-circle"></i>
+                        <p>
+                            Reservation Setting
+                        </p>
+                    </a>
+                </li>
             </ul>
         </nav>
         <!-- /.sidebar-menu -->
