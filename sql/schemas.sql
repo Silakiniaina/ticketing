@@ -117,3 +117,22 @@ CREATE TABLE reservation_setting(
    hour_limit_reserving INT, 
    hour_limit_canceling INT
 );
+
+CREATE TABLE booking (
+    id SERIAL PRIMARY KEY,
+    booking_datetime TIMESTAMP DEFAULT NOW(),
+    user_id INT NOT NULL,
+    flight_id INT NOT NULL,
+    FOREIGN KEY(flight_id) REFERENCES flight(id),
+    FOREIGN KEY(user_id) REFERENCES _user_(id)
+);
+
+CREATE TABLE booking_passenger (
+    id SERIAL PRIMARY KEY,
+    booking_id INT NOT NULL,
+    type_seat_id INT NOT NULL,
+    price DECIMAL(18,2) NOT NULL,
+    promotion DECIMAL(18, 2) DEFAULT 0,
+    FOREIGN KEY(booking_id) REFERENCES booking(id),
+    FOREIGN KEY(type_seat_id) REFERENCES type_seat(id)
+);
