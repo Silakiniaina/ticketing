@@ -157,4 +157,72 @@ public class BookingController {
         }
         return mv;
     }
+
+    /* -------------------------------------------------------------------------- */
+    /*                             Cancel a booking                               */
+    /* -------------------------------------------------------------------------- */
+    @Get
+    @Url("/flights/booking/cancel")
+    public ModelView cancelBooking(@RequestParam("booking") UpdateArg arg) {
+        ModelView mv = new ModelView();
+        if (arg != null) {
+            try {
+                int bookingId = arg.getId();
+                if (bookingService.isBookingCancellationOnTime(bookingId)) {
+                    bookingService.cancelBooking(bookingId);
+                    mv.setUrl("/ticketing/user/bookings");
+                    mv.addObject("success", "Booking successfully canceled");
+                    mv.setRedirect(true);
+                } else {
+                    mv.setUrl("/user/bookings");
+                    mv.addObject("error", "Cancellation period for this booking has expired");
+                }
+            } catch (NumberFormatException nfe) {
+                mv.addObject("error", "Invalid booking ID format: " + nfe.getMessage());
+                mv.setRedirect(false);
+            } catch (DaoException daoEx) {
+                mv.addObject("error", "Error on DAO: " + daoEx.getMessage());
+                mv.setRedirect(false);
+            } catch (SQLException sqlEx) {
+                mv.addObject("error", "Error on SQL: " + sqlEx.getMessage());
+                mv.setRedirect(false);
+            } catch (Exception ex) {
+                mv.addObject("error", "Unexpected error: " + ex.getMessage());
+                mv.setRedirect(false);
+            }
+        } else {
+            mv.addObject("error", "No booking ID specified");
+            mv.setRedirect(false);
+        }
+        return mv;
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                        Get all bookings for user                           */
+    /* -------------------------------------------------------------------------- */
+    @Get
+    @Url("/user/bookings")
+    public ModelView getUserBookings() {
+        ModelView mv = new ModelView("/WEB-INF/views/layout/client-layout.jsp");
+        mv.addObject("contentPage", "pages/client/booking/user-bookings.jsp");
+        try {
+            User u = (User) session.getUser();
+            if (u == null) {
+                mv.addObject("error", "User not logged in");
+                mv.setUrl("/login");
+                mv.setRedirect(true);
+                return mv;
+            }
+            List<Booking> bookings = bookingService.getBookingByUserId(u.getId());
+            mv.addObject("pageTitle", "My Bookings");
+            mv.addObject("bookings", bookings);
+        } catch (DaoException daoEx) {
+            mv.addObject("error", "Error on DAO: " + daoEx.getMessage());
+        } catch (SQLException sqlEx) {
+            mv.addObject("error", "Error on SQL: " + sqlEx.getMessage());
+        } catch (Exception ex) {
+            mv.addObject("error", "Unexpected error: " + ex.getMessage());
+        }
+        return mv;
+    }
 }
