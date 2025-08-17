@@ -79,6 +79,22 @@ public class FlightService {
         Connection c = Database.getActiveConnection();
         flightDAO.delete(c, f);
     }
+    
+    /* -------------------------------------------------------------------------- */
+    /*                 Get seat price by flight ID and type seat ID               */
+    /* -------------------------------------------------------------------------- */
+    public double getSeatPriceByFlightAndTypeSeat(int flightId, int typeSeatId) throws DaoException, SQLException, Exception {
+        Connection c = Database.getActiveConnection();
+        return flightDAO.getSeatPriceByFlightAndTypeSeat(c, flightId, typeSeatId);
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*              Get promotion by flight ID and type seat ID                   */
+    /* -------------------------------------------------------------------------- */
+    public double getPromotion(int flightId, int typeSeatId) throws DaoException, SQLException, Exception {
+        Connection c = Database.getActiveConnection();
+        return flightDAO.getPromotion(c, flightId, typeSeatId);
+    }
 
     /* -------------------------------------------------------------------------- */
     /*                  Inject flightArg value on Flight instance                 */
