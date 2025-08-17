@@ -254,4 +254,72 @@ public class FlightDAO {
             Database.closeRessources(rs, prstm, c, Boolean.valueOf(isNewConnection));
         }
     }
+
+    /* -------------------------------------------------------------------------- */
+    /*                 Get seat price by flight ID and type seat ID               */
+    /* -------------------------------------------------------------------------- */
+    public double getSeatPriceByFlightAndTypeSeat(Connection c, int flightId, int typeSeatId) throws DaoException, SQLException {
+        boolean isNewConnection = false;
+        PreparedStatement prstm = null;
+        ResultSet rs = null;
+        String query = "SELECT price FROM flight_price_type_seat WHERE flight_id = ? AND type_seat_id = ?";
+        try {
+            if (c == null) {
+                c = Database.getActiveConnection();
+                isNewConnection = true;
+            }
+            prstm = c.prepareStatement(query);
+            prstm.setInt(1, flightId);
+            prstm.setInt(2, typeSeatId);
+            rs = prstm.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("price");
+            }
+            return 0.0; // Return 0.0 if no price is found
+        } catch (Exception e) {
+            throw new DaoException(query, e.getMessage());
+        } finally {
+            Database.closeRessources(rs, prstm, c, Boolean.valueOf(isNewConnection));
+        }
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*              Get promotion by flight ID and type seat ID                   */
+    /* -------------------------------------------------------------------------- */
+    public double getPromotion(Connection c, int flightId, int typeSeatId) throws DaoException, SQLException {
+        boolean isNewConnection = false;
+        PreparedStatement prstm = null;
+        ResultSet rs = null;
+        String query = "SELECT fsp.percentage, fsp.seat_number, " +
+                      "(SELECT COUNT(*) FROM booking_passenger bp " +
+                      "JOIN booking b ON bp.booking_id = b.id " +
+                      "WHERE b.flight_id = ? AND bp.type_seat_id = ?) AS booked_seats " +
+                      "FROM flight_seat_promotion fsp " +
+                      "WHERE fsp.flight_id = ? AND fsp.type_seat_id = ?";
+        try {
+            if (c == null) {
+                c = Database.getActiveConnection();
+                isNewConnection = true;
+            }
+            prstm = c.prepareStatement(query);
+            prstm.setInt(1, flightId);
+            prstm.setInt(2, typeSeatId);
+            prstm.setInt(3, flightId);
+            prstm.setInt(4, typeSeatId);
+            rs = prstm.executeQuery();
+            if (rs.next()) {
+                int seatNumber = rs.getInt("seat_number");
+                int bookedSeats = rs.getInt("booked_seats");
+                double percentage = rs.getDouble("percentage");
+                if (seatNumber > bookedSeats && seatNumber > 0) {
+                    return percentage;
+                }
+            }
+            return 0.0; // Return 0.0 if no promotion is available or all seats are taken
+        } catch (Exception e) {
+            throw new DaoException(query, e.getMessage());
+        } finally {
+            Database.closeRessources(rs, prstm, c, Boolean.valueOf(isNewConnection));
+        }
+    }
 }
