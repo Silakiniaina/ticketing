@@ -42,6 +42,15 @@
                         </p>
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a href="<%= request.getContextPath() %>/user/bookings" class="nav-link">
+                        <i class="nav-icon fas fa-circle"></i>
+                        <p>
+                            Booking
+                        </p>
+                    </a>
+                </li>
             </ul>
         </nav>
         <!-- /.sidebar-menu -->
