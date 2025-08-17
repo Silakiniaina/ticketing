@@ -15,15 +15,23 @@ public class UserService {
     /* -------------------------------------------------------------------------- */
     /*                                 Constructor                                */
     /* -------------------------------------------------------------------------- */
-    public UserService(){
+    public UserService() {
         this.userDAO = new UserDAO();
     }
 
     /* -------------------------------------------------------------------------- */
     /*              Service for login a user with email and password              */
     /* -------------------------------------------------------------------------- */
-    public User login(String email, String password) throws AuthException, SQLException, Exception{
+    public User login(String email, String password) throws AuthException, SQLException, Exception {
         Connection c = Database.getActiveConnection();
         return this.userDAO.login(email, password, c);
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                           Get a user by its id                             */
+    /* -------------------------------------------------------------------------- */
+    public User getById(int id) throws AuthException, SQLException, Exception {
+        Connection c = Database.getActiveConnection();
+        return this.userDAO.getById(c, id);
     }
 }
