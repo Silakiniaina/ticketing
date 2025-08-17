@@ -151,4 +151,107 @@ public class BookingDAO {
             throw new DaoException("Check booking on time", e.getMessage());
         }
     }
+
+    /* -------------------------------------------------------------------------- */
+    /*                             Cancel a booking                               */
+    /* -------------------------------------------------------------------------- */
+    public void cancelBooking(Connection c, int bookingId) throws DaoException, SQLException {
+        boolean isNewConnection = false;
+        PreparedStatement prstmBooking = null;
+        PreparedStatement prstmPassenger = null;
+        String deletePassengerQuery = "DELETE FROM booking_passenger WHERE booking_id = ?";
+        String deleteBookingQuery = "DELETE FROM booking WHERE id = ?";
+        try {
+            if (c == null) {
+                c = Database.getActiveConnection();
+                isNewConnection = true;
+            }
+            c.setAutoCommit(false);
+
+            // Delete associated booking_passenger entries
+            prstmPassenger = c.prepareStatement(deletePassengerQuery);
+            prstmPassenger.setInt(1, bookingId);
+            prstmPassenger.executeUpdate();
+
+            // Delete the booking
+            prstmBooking = c.prepareStatement(deleteBookingQuery);
+            prstmBooking.setInt(1, bookingId);
+            int affectedRow = prstmBooking.executeUpdate();
+            if (affectedRow > 0) {
+                c.commit();
+            } else {
+                c.rollback();
+                throw new DaoException(deleteBookingQuery, "Booking not found");
+            }
+        } catch (Exception e) {
+            c.rollback();
+            throw new DaoException(deleteBookingQuery, e.getMessage());
+        } finally {
+            Database.closeRessources(null, prstmPassenger, null, false);
+            Database.closeRessources(null, prstmBooking, c, Boolean.valueOf(isNewConnection));
+        }
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*               Check if booking cancellation is on time                     */
+    /* -------------------------------------------------------------------------- */
+    public boolean isBookingCancellationOnTime(Connection c, int bookingId) throws DaoException, SQLException {
+        try {
+            // Retrieve booking, flight, and reservation settings
+            Booking booking = getById(c, bookingId);
+            if (booking == null || booking.getFlight() == null || booking.getFlight().getDepartureDatetime() == null) {
+                return false;
+            }
+            ReservationSetting settings = reservationSettingDAO.getSetting(c);
+            if (settings == null) {
+                return false;
+            }
+
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            LocalDateTime departureDateTime = booking.getFlight().getDepartureDatetime().toLocalDateTime();
+            int hourLimitCanceling = settings.getHourLimitCanceling();
+
+            if (departureDateTime.isBefore(currentDateTime) || 
+                departureDateTime.minusHours(hourLimitCanceling).isBefore(currentDateTime) ||
+                departureDateTime.minusHours(hourLimitCanceling).isEqual(currentDateTime)) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            throw new DaoException("Check booking cancellation on time", e.getMessage());
+        }
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                        Get all bookings by user ID                         */
+    /* -------------------------------------------------------------------------- */
+    public List<Booking> getBookingByUserId(Connection c, int userId) throws DaoException, SQLException {
+        List<Booking> result = new ArrayList<>();
+        boolean isNewConnection = false;
+        PreparedStatement prstm = null;
+        ResultSet rs = null;
+        String query = "SELECT * FROM booking WHERE user_id = ?";
+        try {
+            if (c == null) {
+                c = Database.getActiveConnection();
+                isNewConnection = true;
+            }
+            prstm = c.prepareStatement(query);
+            prstm.setInt(1, userId);
+            rs = prstm.executeQuery();
+            while (rs.next()) {
+                Booking b = new Booking();
+                b.setId(rs.getInt("id"));
+                b.setBookingDatetime(rs.getTimestamp("booking_datetime"));
+                b.setUser(userDAO.getById(c, rs.getInt("user_id")));
+                b.setFlight(flightDAO.getById(c, rs.getInt("flight_id")));
+                result.add(b);
+            }
+            return result;
+        } catch (Exception e) {
+            throw new DaoException(query, e.getMessage());
+        } finally {
+            Database.closeRessources(rs, prstm, c, Boolean.valueOf(isNewConnection));
+        }
+    }
 }
