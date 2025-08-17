@@ -68,11 +68,16 @@ public class BookingController {
                 b.setUser(u);
                 b.setFlight(f);
                 b.setBookingDatetime(DateUtil.convertStringToTimestamp(LocalDateTime.now().toString()));
-                b = bookingService.insert(b);
+                if(bookingService.isBookingOnTime(b)){
+                    b = bookingService.insert(b);
+                    String url = "booking/details?booking.id="+b.getId();
+                    mv.setUrl(url);
+                    mv.setRedirect(true);
+                }else{
+                    mv.setUrl("/user/flights");
+                    mv.addObject("error", "The booking for this flight is closed");
+                }
 
-                String url = "booking/details?booking.id="+b.getId();
-                mv.setUrl(url);
-                mv.setRedirect(true);
             } catch (NumberFormatException nfe) {
                 mv.addObject("error", "Invalid flight ID format: " + nfe.getMessage());
                 mv.setRedirect(false);
