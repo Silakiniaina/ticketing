@@ -57,6 +57,7 @@
                                 <th>Price</th>
                                 <th>Promotion</th>
                                 <th>Real Price</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -79,6 +80,11 @@
                                     </td>
                                     <td>
                                         <%= bookingPassenger.getRealPrice() %>
+                                    </td>
+                                    <td>
+                                        <% if(bookingPassenger.getPassportFilePath() != null) { out.println(bookingPassenger.getPassportFilePath()); } else { %>
+                                            <a href="<%= request.getContextPath() %>/booking/passport-upload?booking.id=<%= booking.getId() %>" class="btn btn-danger btn-sm">Upload Passport</a>
+                                        <% } %>
                                     </td>
                                 </tr>
                                 <% }} else { %>

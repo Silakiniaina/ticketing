@@ -7,6 +7,7 @@ import java.util.List;
 import dto.BookingPassengerArg;
 import dto.UpdateArg;
 import exception.DaoException;
+import jakarta.servlet.http.Part;
 import lombok.Getter;
 import lombok.Setter;
 import mg.dash.mvc.annotation.Controller;
@@ -16,6 +17,7 @@ import mg.dash.mvc.annotation.RequestParam;
 import mg.dash.mvc.annotation.Url;
 import mg.dash.mvc.controller.MySession;
 import mg.dash.mvc.handler.views.ModelView;
+import mg.dash.mvc.util.FileUtils;
 import model.Booking;
 import model.BookingPassenger;
 import model.Flight;
@@ -93,7 +95,7 @@ public class BookingController {
             }
         }
         return mv;
-    } 
+    }
 
     /* -------------------------------------------------------------------------- */
     /*                               Booking details                              */
@@ -222,6 +224,55 @@ public class BookingController {
             mv.addObject("error", "Error on SQL: " + sqlEx.getMessage());
         } catch (Exception ex) {
             mv.addObject("error", "Unexpected error: " + ex.getMessage());
+        }
+        return mv;
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                        Show upload form for passport                       */
+    /* -------------------------------------------------------------------------- */
+    @Get
+    @Url("/booking/passport-upload")
+    public ModelView showUploadForm(@RequestParam("booking") UpdateArg arg){
+        ModelView mv = new ModelView("/WEB-INF/views/layout/client-layout.jsp");
+        mv.addObject("contentPage", "pages/client/booking/passport-upload.jsp");
+        if(arg != null){
+            try {
+                mv.addObject("bp", arg.getId());
+            } catch (Exception e) {
+                mv.addObject("error", "Unexpected error: " + e.getMessage());
+            }
+        }
+        return mv;
+    }
+
+    @Post
+    @Url("/booking/passport-upload")
+    public ModelView uploadPassport(@RequestParam("file") Part file, @RequestParam("id") String id){
+        ModelView mv = new ModelView();
+        try {
+            if (!(file instanceof Part)) {
+                throw new IllegalArgumentException("Invalid file upload type: " + file.getClass().getName());
+            }
+            String uploadDir = "passport";
+            String filePath = FileUtils.uploadFile(file, uploadDir,true);
+            BookingPassenger bp = bookingPassengerService.getById(Integer.valueOf(id));
+            bp.setPassportFilePath(filePath);
+            mv.setUrl("/ticketing/user/bookings");
+            mv.addObject("success", "File uploaded successfully");
+            mv.setRedirect(true);
+        } catch (IllegalArgumentException nfe) {
+            mv.addObject("error", nfe.getMessage());
+            mv.setRedirect(false);
+        } catch (DaoException daoEx) {
+            mv.addObject("error", "Error on DAO: " + daoEx.getMessage());
+            mv.setRedirect(false);
+        } catch (SQLException sqlEx) {
+            mv.addObject("error", "Error on SQL: " + sqlEx.getMessage());
+            mv.setRedirect(false);
+        } catch (Exception ex) {
+            mv.addObject("error", "Unexpected error: " + ex.getMessage());
+            mv.setRedirect(false);
         }
         return mv;
     }

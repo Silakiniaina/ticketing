@@ -12,6 +12,7 @@ public class BookingPassenger {
     private TypeSeat typeSeat; 
     private double price;
     private double promotion;
+    private String passportFilePath;
 
 
     /* -------------------------------------------------------------------------- */

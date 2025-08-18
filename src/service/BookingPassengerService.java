@@ -36,11 +36,27 @@ public class BookingPassengerService {
     }
 
     /* -------------------------------------------------------------------------- */
+    /*                                  Get by id                                 */
+    /* -------------------------------------------------------------------------- */
+    public BookingPassenger getById(int bookingId) throws DaoException, SQLException, Exception {
+        Connection c = Database.getActiveConnection();
+        return bookingPassengerDAO.getById(c, bookingId);
+    }
+
+    /* -------------------------------------------------------------------------- */
     /*                          Add a booking passenger                           */
     /* -------------------------------------------------------------------------- */
     public BookingPassenger addBookingPassenger(BookingPassenger bp) throws DaoException, SQLException, Exception {
         Connection c = Database.getActiveConnection();
         return bookingPassengerDAO.insert(c, bp);
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                           Add passport file path                           */
+    /* -------------------------------------------------------------------------- */
+    public void addPassportFilePath(BookingPassenger bp) throws DaoException, SQLException, Exception {
+        Connection c = Database.getActiveConnection();
+        bookingPassengerDAO.addPassportFilePath(c, bp);
     }
 
     /* -------------------------------------------------------------------------- */
