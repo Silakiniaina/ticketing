@@ -55,20 +55,6 @@ CREATE TABLE gender(
    PRIMARY KEY(id)
 );
 
-CREATE TABLE reservation(
-   id SERIAL,
-   reservation_datetime TIMESTAMP DEFAULT NOW(),
-   price DECIMAL(18,2) NOT NULL,
-   promotion DECIMAL(5,2) DEFAULT 0,
-   user_id INT NOT NULL,
-   flight_id INT NOT NULL,
-   type_seat_id INT NOT NULL,
-   PRIMARY KEY(id),
-   FOREIGN KEY(user_id) REFERENCES _user_(id),
-   FOREIGN KEY(flight_id) REFERENCES flight(id),
-   FOREIGN KEY(type_seat_id) REFERENCES type_seat(id)
-);
-
 CREATE TABLE plane_seat(
    type_seat_id INT,
    plane_id INT,
@@ -133,6 +119,7 @@ CREATE TABLE booking_passenger (
     type_seat_id INT NOT NULL,
     price DECIMAL(18,2) NOT NULL,
     promotion DECIMAL(18, 2) DEFAULT 0,
+    passport_file_path TEXT,
     FOREIGN KEY(booking_id) REFERENCES booking(id),
     FOREIGN KEY(type_seat_id) REFERENCES type_seat(id)
 );
