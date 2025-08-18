@@ -1,7 +1,9 @@
 package service;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 import dao.FlightDAO;
@@ -26,17 +28,17 @@ public class FlightPromotionService {
     /*                                 Constructor                                */
     /* -------------------------------------------------------------------------- */
     public FlightPromotionService(){
-        this.flightPromotionDAO = new FlightPromotionDAO();
         this.flightDAO = new FlightDAO();
         this.typeSeatDAO = new TypeSeatDAO();
+        this.flightPromotionDAO = new FlightPromotionDAO(this.flightDAO, this.typeSeatDAO);
     }
     
     /* -------------------------------------------------------------------------- */
     /*                             Insert a promotion                             */
     /* -------------------------------------------------------------------------- */
-    public void insert(FlightPromotion f)throws DaoException, SQLException, Exception{
+    public FlightPromotion insert(FlightPromotion f)throws DaoException, SQLException, Exception{
         Connection c = Database.getActiveConnection();
-        flightPromotionDAO.insert(c, f);
+        return flightPromotionDAO.insert(c, f);
     }
 
     /* -------------------------------------------------------------------------- */
@@ -58,7 +60,8 @@ public class FlightPromotionService {
         f.setFlight(flightDAO.getById(c, args.getFlightId()));
         f.setTypeSeat(typeSeatDAO.getById(c, args.getTypeSeatId()));
         f.setSeatNumber(args.getSeatNumber());
-        f.setPercentage(args.getPercentage());
+        f.setPrice(args.getPrice());
+        f.setPromotionDate(Date.valueOf(LocalDate.parse(args.getPromotionDate())));
         return f;
     }
 }

@@ -52,6 +52,14 @@ public class BookingPassengerService {
     }
 
     /* -------------------------------------------------------------------------- */
+    /*                            Pay booking passenger                           */
+    /* -------------------------------------------------------------------------- */
+    public void pay(int bp) throws DaoException, SQLException, Exception {
+        Connection c = Database.getActiveConnection();
+        bookingPassengerDAO.pay(c, bp);
+    }
+
+    /* -------------------------------------------------------------------------- */
     /*                           Add passport file path                           */
     /* -------------------------------------------------------------------------- */
     public void addPassportFilePath(BookingPassenger bp) throws DaoException, SQLException, Exception {

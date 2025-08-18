@@ -1,10 +1,11 @@
 package controller;
 
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.List;
 
+import dto.BookingDateArg;
 import dto.BookingPassengerArg;
+import dto.BookingPassengerPaymentArg;
 import dto.UpdateArg;
 import exception.DaoException;
 import jakarta.servlet.http.Part;
@@ -57,19 +58,45 @@ public class BookingController {
     /*                                Book a flight                               */
     /* -------------------------------------------------------------------------- */
     @Get
-    @Url("/flights/booking")
-    public ModelView bookFlight(@RequestParam("flight") UpdateArg arg){
-        ModelView mv = new ModelView();
+    @Url("/flights/booking-date")
+    public ModelView dateBooking(@RequestParam("flight") UpdateArg arg){
+        ModelView mv = new ModelView("/WEB-INF/views/layout/client-layout.jsp");
+        mv.addObject("contentPage", "pages/client/booking/booking-date-form.jsp");
         if(arg != null){
             try {
                 
                 Flight f = flightService.getById(arg.getId());
+                mv.addObject("flight", f);
+            } catch (NumberFormatException nfe) {
+                mv.addObject("error", "Invalid flight ID format: " + nfe.getMessage());
+                mv.setRedirect(false);
+            } catch (DaoException daoEx) {
+                mv.addObject("error", "Error on DAO  " + daoEx.getMessage());
+                mv.setRedirect(false);
+            } catch (SQLException sqlEx) {
+                mv.addObject("error", "Error on SQL  " + sqlEx.getMessage());
+                mv.setRedirect(false);
+            } catch (Exception ex) {
+                mv.addObject("error", "Unexpected error: " + ex.getMessage());
+                mv.setRedirect(false);
+            }
+        }
+        return mv;
+    }
+
+    @Get
+    @Url("/flights/booking")
+    public ModelView bookFlight(@RequestParam("booking") BookingDateArg arg){
+        ModelView mv = new ModelView("/user/flights");
+        if(arg != null){
+            try {
+                Flight f = flightService.getById(arg.getFlightId());
                 User u = (User)session.getUser();
 
                 Booking b = new Booking();
                 b.setUser(u);
                 b.setFlight(f);
-                b.setBookingDatetime(DateUtil.convertStringToTimestamp(LocalDateTime.now().toString()));
+                b.setBookingDatetime(DateUtil.convertStringToTimestamp(arg.getBookingDate()+"T00:00:00"));
                 if(bookingService.isBookingOnTime(b)){
                     b = bookingService.insert(b);
                     String url = "booking/details?booking.id="+b.getId();
@@ -93,6 +120,8 @@ public class BookingController {
                 mv.addObject("error", "Unexpected error: " + ex.getMessage());
                 mv.setRedirect(false);
             }
+        }else{
+            mv.addObject("error", "Booking Date Arg is null");
         }
         return mv;
     }
@@ -142,8 +171,8 @@ public class BookingController {
             try {
                 for(int i=0; i<arg.getSeatNumber(); i++){
                     BookingPassenger bp = bookingPassengerService.injectValues(new BookingPassenger(), arg);
-                    bp.setPrice(flightService.getSeatPriceByFlightAndTypeSeat(bp.getBooking().getFlight().getId(), arg.getTypeSeatId()));
-                    bp.setPromotion(flightService.getPromotion(bp.getBooking().getFlight().getId(), arg.getTypeSeatId()));
+                    bp.setPrice(flightService.getPromotion(bp.getBooking().getFlight().getId(), arg.getTypeSeatId(), bp.getBooking().getBookingDatetime()));
+                    bp.setPromotion(0);
                     bookingPassengerService.addBookingPassenger(bp);
                 }
                 String url = "details?booking.id="+arg.getBookingId();
@@ -273,6 +302,59 @@ public class BookingController {
         } catch (Exception ex) {
             mv.addObject("error", "Unexpected error: " + ex.getMessage());
             mv.setRedirect(false);
+        }
+        return mv;
+    }
+
+    @Get
+    @Url("/booking/payment")
+    public ModelView showPaymentForm(@RequestParam("booking") UpdateArg arg){
+        ModelView mv = new ModelView();
+        if(arg != null){
+            try {
+                BookingPassenger bookingPassenger = bookingPassengerService.getById(arg.getId());
+                bookingPassengerService.pay(arg.getId());
+                String url = "/ticketing/flights/booking/details?booking.id="+bookingPassenger.getBooking().getId();
+                mv.setUrl(url);
+                mv.addObject("pageTitle", "Booking");
+                mv.setRedirect(true);
+            } catch (NumberFormatException nfe) {
+                mv.addObject("error", "Invalid booking ID format: " + nfe.getMessage());
+            } catch (DaoException daoEx) {
+                mv.addObject("error", "Error on DAO  " + daoEx.getMessage());
+            } catch (SQLException sqlEx) {
+                mv.addObject("error", "Error on SQL  " + sqlEx.getMessage());
+            } catch (Exception ex) {
+                mv.addObject("error", "Unexpected error: " + ex.getMessage());
+            }
+        }
+        return mv;
+    }
+
+    @Post
+    @Url("/booking/payment")
+    public ModelView uploadPassport(@RequestParam("booking") BookingPassengerPaymentArg arg){
+        ModelView mv = new ModelView();
+        if(arg != null){
+            try {
+
+                BookingPassenger bp = bookingPassengerService.getById(arg.getBookingId());
+                mv.setUrl("/ticketing/user/bookings");
+                mv.addObject("success", "File uploaded successfully");
+                mv.setRedirect(true);
+            } catch (IllegalArgumentException nfe) {
+                mv.addObject("error", nfe.getMessage());
+                mv.setRedirect(false);
+            } catch (DaoException daoEx) {
+                mv.addObject("error", "Error on DAO: " + daoEx.getMessage());
+                mv.setRedirect(false);
+            } catch (SQLException sqlEx) {
+                mv.addObject("error", "Error on SQL: " + sqlEx.getMessage());
+                mv.setRedirect(false);
+            } catch (Exception ex) {
+                mv.addObject("error", "Unexpected error: " + ex.getMessage());
+                mv.setRedirect(false);
+            }
         }
         return mv;
     }

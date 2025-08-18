@@ -17,7 +17,7 @@ public class Database{
         Connection c = null;
         try{
             Class.forName("org.postgresql.Driver");
-            c = DriverManager.getConnection("jdbc:postgresql://localhost/ticketing", "postgres", "DashDashGo2K23!!");
+            c = DriverManager.getConnection("jdbc:postgresql://localhost/postgres", "postgres", "DashDashGo2K23!!");
         }catch(Exception e){
             e.printStackTrace();
             throw e ;

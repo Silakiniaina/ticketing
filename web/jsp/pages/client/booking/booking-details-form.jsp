@@ -82,8 +82,12 @@
                                         <%= bookingPassenger.getRealPrice() %>
                                     </td>
                                     <td>
-                                        <% if(bookingPassenger.getPassportFilePath() != null) { out.println(bookingPassenger.getPassportFilePath()); } else { %>
+                                        <!-- <% if(bookingPassenger.getPassportFilePath() != null) { out.println(bookingPassenger.getPassportFilePath()); } else { %>
                                             <a href="<%= request.getContextPath() %>/booking/passport-upload?booking.id=<%= booking.getId() %>" class="btn btn-danger btn-sm">Upload Passport</a>
+                                        <% } %> -->
+
+                                        <% if(bookingPassenger.getIsPaid() != 0) { out.println("Paid"); } else { %>
+                                            <a href="<%= request.getContextPath() %>/booking/payment?booking.id=<%= bookingPassenger.getId() %>" class="btn btn-info btn-sm">Pay</a>
                                         <% } %>
                                     </td>
                                 </tr>

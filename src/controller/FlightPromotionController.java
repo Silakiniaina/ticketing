@@ -78,7 +78,7 @@ public class FlightPromotionController {
         if (arg != null) {
             try {
                 FlightPromotion prom = flightPromotionService.injectValues(new FlightPromotion(), arg);
-                flightPromotionService.insert(prom);
+                prom = flightPromotionService.insert(prom);
                 mv.addObject("success", "Flight promotion created successfully");
                 String url = "add?flight.id="+arg.getFlightId();
                 mv.setUrl(url);

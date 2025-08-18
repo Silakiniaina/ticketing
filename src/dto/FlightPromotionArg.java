@@ -10,5 +10,6 @@ public class FlightPromotionArg {
     private int flightId;
     private int typeSeatId;
     private int seatNumber;
-    private double percentage;
+    private double price;
+    private String promotionDate;
 }

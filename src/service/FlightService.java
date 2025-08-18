@@ -2,10 +2,12 @@ package service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 
 import dao.CityDAO;
 import dao.FlightDAO;
+import dao.FlightPromotionDAO;
 import dao.PlaneDAO;
 import dto.FlightArg;
 import exception.DaoException;
@@ -27,9 +29,9 @@ public class FlightService {
     /*                                 Constructor                                */
     /* -------------------------------------------------------------------------- */
     public FlightService(){
-        this.flightDAO = new FlightDAO();
-        this.cityDAO = new CityDAO();
         this.planeDAO = new PlaneDAO();
+        this.cityDAO = new CityDAO();
+        this.flightDAO = new FlightDAO(this.planeDAO, this.cityDAO, new FlightPromotionDAO());
     }
 
     /* -------------------------------------------------------------------------- */
@@ -89,11 +91,11 @@ public class FlightService {
     }
 
     /* -------------------------------------------------------------------------- */
-    /*              Get promotion by flight ID and type seat ID                   */
+    /*             Get promotion by flight ID, type seat ID and date              */
     /* -------------------------------------------------------------------------- */
-    public double getPromotion(int flightId, int typeSeatId) throws DaoException, SQLException, Exception {
+    public double getPromotion(int flightId, int typeSeatId, Timestamp bookingDateTime) throws DaoException, SQLException, Exception {
         Connection c = Database.getActiveConnection();
-        return flightDAO.getPromotion(c, flightId, typeSeatId);
+        return flightDAO.getPromotion(c, flightId, typeSeatId, bookingDateTime.toLocalDateTime().toLocalDate());
     }
 
     /* -------------------------------------------------------------------------- */

@@ -9,6 +9,7 @@ import java.util.List;
 
 import exception.DaoException;
 import model.BookingPassenger;
+import model.ReservationSetting;
 import util.Database;
 
 public class BookingPassengerDAO {
@@ -48,6 +49,7 @@ public class BookingPassengerDAO {
                 bp.setTypeSeat(typeSeatDAO.getById(c, rs.getInt("type_seat_id")));
                 bp.setPrice(rs.getDouble("price"));
                 bp.setPromotion(rs.getDouble("promotion"));
+                bp.setIsPaid(rs.getInt("ispaid"));
                 result.add(bp);
             }
             return result;
@@ -82,6 +84,7 @@ public class BookingPassengerDAO {
                 result.setTypeSeat(typeSeatDAO.getById(c, rs.getInt("type_seat_id")));
                 result.setPrice(rs.getDouble("price"));
                 result.setPromotion(rs.getDouble("promotion"));
+                result.setIsPaid(rs.getInt("ispaid"));
             }
             return result;
         } catch (Exception e) {
@@ -153,6 +156,31 @@ public class BookingPassengerDAO {
             throw new DaoException(query, e.getMessage());
         } finally {
             Database.closeRessources(generatedKeys, prstm, c, Boolean.valueOf(isNewConnection));
+        }
+    }
+
+    public void pay(Connection c, int r)throws DaoException, SQLException{
+        boolean isNewConnection = false;
+        PreparedStatement prstm = null; 
+        String query = "UPDATE booking_passenger SET ispaid = ? WHERE id = ?";
+        try {
+            if(c == null){
+                c = Database.getActiveConnection();
+                isNewConnection = true;
+            }
+            c.setAutoCommit(false);
+            prstm = c.prepareStatement(query);
+            prstm.setInt(1, 1);
+            prstm.setInt(2, r);
+            int affectedRow = prstm.executeUpdate();
+            if(affectedRow > 0){
+                c.commit();
+            }
+        } catch (Exception e) {
+            c.rollback();
+            throw new DaoException(query, e.getMessage());
+        } finally{
+            Database.closeRessources(null, prstm, c, Boolean.valueOf(isNewConnection));
         }
     }
 }

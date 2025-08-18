@@ -1,9 +1,12 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +19,7 @@ public class FlightDAO {
 
     private PlaneDAO planeDAO;
     private CityDAO cityDAO;
+    private FlightPromotionDAO flightPromotionDAO;
 
     /* -------------------------------------------------------------------------- */
     /*                                 Constructor                                */
@@ -23,6 +27,12 @@ public class FlightDAO {
     public FlightDAO(){
         this.planeDAO = new PlaneDAO();
         this.cityDAO = new CityDAO();
+    }
+
+    public FlightDAO(PlaneDAO pd, CityDAO cd, FlightPromotionDAO fpd){
+        this.planeDAO = pd;
+        this.cityDAO = cd;
+        this.flightPromotionDAO = fpd;
     }
     
     /* -------------------------------------------------------------------------- */
@@ -286,16 +296,16 @@ public class FlightDAO {
     /* -------------------------------------------------------------------------- */
     /*              Get promotion by flight ID and type seat ID                   */
     /* -------------------------------------------------------------------------- */
-    public double getPromotion(Connection c, int flightId, int typeSeatId) throws DaoException, SQLException {
+    public double getPromotion(Connection c, int flightId, int typeSeatId, LocalDate date) throws DaoException, SQLException {
         boolean isNewConnection = false;
         PreparedStatement prstm = null;
         ResultSet rs = null;
-        String query = "SELECT fsp.percentage, fsp.seat_number, " +
+        String query = "SELECT fsp.price, fsp.seat_number, " +
                       "(SELECT COUNT(*) FROM booking_passenger bp " +
                       "JOIN booking b ON bp.booking_id = b.id " +
-                      "WHERE b.flight_id = ? AND bp.type_seat_id = ?) AS booked_seats " +
+                      "WHERE b.flight_id = ? AND bp.type_seat_id = ? AND promotion_date <= ?) AS booked_seats " +
                       "FROM flight_seat_promotion fsp " +
-                      "WHERE fsp.flight_id = ? AND fsp.type_seat_id = ?";
+                      "WHERE fsp.flight_id = ? AND fsp.type_seat_id = ? ";
         try {
             if (c == null) {
                 c = Database.getActiveConnection();
@@ -304,18 +314,19 @@ public class FlightDAO {
             prstm = c.prepareStatement(query);
             prstm.setInt(1, flightId);
             prstm.setInt(2, typeSeatId);
-            prstm.setInt(3, flightId);
+            prstm.setDate(3, Date.valueOf(date));
             prstm.setInt(4, typeSeatId);
+            prstm.setInt(5, flightId);
             rs = prstm.executeQuery();
             if (rs.next()) {
                 int seatNumber = rs.getInt("seat_number");
                 int bookedSeats = rs.getInt("booked_seats");
-                double percentage = rs.getDouble("percentage");
+                double price = rs.getDouble("price");
                 if (seatNumber > bookedSeats && seatNumber > 0) {
-                    return percentage;
+                    return price;
                 }
             }
-            return 0.0; // Return 0.0 if no promotion is available or all seats are taken
+            return 0.0;
         } catch (Exception e) {
             throw new DaoException(query, e.getMessage());
         } finally {

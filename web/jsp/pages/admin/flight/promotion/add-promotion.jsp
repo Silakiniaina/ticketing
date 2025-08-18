@@ -41,12 +41,23 @@
                             
                         </div>
                         <div class="form-group">
-                            <label for="percentage">Percentage</label>
+                            <label for="price">Price</label>
                             <input 
                                 type="number" 
+                                step="0.01"
                                 min="0"
-                                name="promotion.percentage" 
-                                id="percentage" 
+                                name="promotion.price" 
+                                id="price" 
+                                class="form-control" 
+                            />
+                            
+                        </div>
+                        <div class="form-group">
+                            <label for="promotionDate">Promotion Date (Deadline)</label>
+                            <input 
+                                type="date" 
+                                name="promotion.promotionDate" 
+                                id="promotionDate" 
                                 class="form-control" 
                             />
                             
@@ -66,7 +77,8 @@
                                 <th>Flight</th>
                                 <th>Type Seat</th>
                                 <th>Seat Number</th>
-                                <th>Percentage</th>
+                                <th>Price</th>
+                                <th>Promotion Date</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -85,12 +97,15 @@
                                         <%= promotion.getSeatNumber() %>
                                     </td>
                                     <td>
-                                        <%= promotion.getPercentage() %>
+                                        <%= promotion.getPrice() %>
+                                    </td>
+                                    <td>
+                                        <%= promotion.getPromotionDate() %>
                                     </td>
                                 </tr>
                                 <% }} else { %>
                                 <tr>
-                                    <td colspan="8" class="text-center">No promotions found for flight number : <%= flightId.intValue() %></td>
+                                    <td colspan="8" class="text-center">No promotions found for flight number : <%= flightId != null ? flightId.intValue() : 0 %> </td>
                                 </tr>
                             <% } %>
                         </tbody>

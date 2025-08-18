@@ -67,8 +67,9 @@ CREATE TABLE plane_seat(
 CREATE TABLE flight_seat_promotion(
    type_seat_id INT,
    flight_id INT,
-   percentage DECIMAL(5,2) DEFAULT 0,
+   price DECIMAL(18,2) DEFAULT 0,
    seat_number INT DEFAULT 0,
+   promotion_date DATE DEFAULT NOW(),
    PRIMARY KEY(type_seat_id, flight_id),
    FOREIGN KEY(type_seat_id) REFERENCES type_seat(id),
    FOREIGN KEY(flight_id) REFERENCES flight(id)
@@ -120,6 +121,7 @@ CREATE TABLE booking_passenger (
     price DECIMAL(18,2) NOT NULL,
     promotion DECIMAL(18, 2) DEFAULT 0,
     passport_file_path TEXT,
+    isPaid INT DEFAULT 0,
     FOREIGN KEY(booking_id) REFERENCES booking(id),
     FOREIGN KEY(type_seat_id) REFERENCES type_seat(id)
 );

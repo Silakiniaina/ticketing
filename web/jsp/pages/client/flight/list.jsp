@@ -131,7 +131,7 @@
                                             flight.getArrivalCity().getLabel() : "N/A" %>
                                 </td>
                                 <td>
-                                    <a href="<%= request.getContextPath() %>/flights/booking?flight.id=<%= flight.getId() %>"
+                                    <a href="<%= request.getContextPath() %>/flights/booking-date?flight.id=<%= flight.getId() %>"
                                         class="btn btn-info btn-sm">
                                         Reserve
                                     </a>

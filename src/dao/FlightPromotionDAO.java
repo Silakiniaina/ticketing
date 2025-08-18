@@ -13,24 +13,29 @@ import util.Database;
 
 public class FlightPromotionDAO {
     
-    private final FlightDAO flightDAO;
-    private final TypeSeatDAO typeSeatDAO;
+    private TypeSeatDAO typeSeatDAO;
+    private FlightDAO flightDAO;
 
     /* -------------------------------------------------------------------------- */
     /*                                 Constructor                                */
     /* -------------------------------------------------------------------------- */
     public FlightPromotionDAO(){
-        this.flightDAO = new FlightDAO();
         this.typeSeatDAO = new TypeSeatDAO();
     }
 
+    /* Constructor with FlightDAO for dependency injection */
+    public FlightPromotionDAO(FlightDAO flightDAO, TypeSeatDAO typeSeatDAO) {
+        this.flightDAO = flightDAO;
+        this.typeSeatDAO = typeSeatDAO;
+    }
     /* -------------------------------------------------------------------------- */
     /*                          Insert a flight promotion                         */
     /* -------------------------------------------------------------------------- */
-    public void insert(Connection c, FlightPromotion f)throws DaoException, SQLException{
+    public FlightPromotion insert(Connection c, FlightPromotion f)throws DaoException, SQLException{
         boolean isNewConnection = false;
         PreparedStatement prstm = null; 
-        String query = "INSERT INTO flight_seat_promotion(type_seat_id, flight_id, seat_number, percentage) VALUES(?,?,?,?)";
+        ResultSet generatedKeys = null;
+        String query = "INSERT INTO flight_seat_promotion(type_seat_id, flight_id, seat_number, price, promotion_date) VALUES(?,?,?,?,?)";
         try {
             if(c == null){
                 c = Database.getActiveConnection();
@@ -41,16 +46,18 @@ public class FlightPromotionDAO {
             prstm.setInt(1, f.getTypeSeat().getId());
             prstm.setInt(2, f.getFlight().getId());
             prstm.setInt(3, f.getSeatNumber());
-            prstm.setDouble(4, f.getPercentage());
+            prstm.setDouble(4, f.getPrice());
+            prstm.setDate(5, f.getPromotionDate());
             int affectedRow = prstm.executeUpdate();
-            if(affectedRow > 0){
+            if (affectedRow > 0) {
                 c.commit();
             }
+            return f;
         } catch (Exception e) {
             c.rollback();
             throw new DaoException(query, e.getMessage());
         } finally{
-            Database.closeRessources(null, prstm, c, Boolean.valueOf(isNewConnection));
+            Database.closeRessources(generatedKeys, prstm, c, Boolean.valueOf(isNewConnection));
         }
     }
 
@@ -63,7 +70,7 @@ public class FlightPromotionDAO {
         boolean isNewConnection = false;
         PreparedStatement prstm = null; 
         ResultSet rs = null; 
-        String query = "SELECT * FROM flight_seat_promotion WHERE flight_id = ?";
+        String query = "SELECT * FROM flight_seat_promotion WHERE flight_id = ? ORDER BY promotion_date ASC";
         try {
             if(c == null){
                 c = Database.getActiveConnection(); 
@@ -77,7 +84,8 @@ public class FlightPromotionDAO {
                 t.setFlight(flightDAO.getById(c, rs.getInt("flight_id")));
                 t.setTypeSeat(typeSeatDAO.getById(c, rs.getInt("type_seat_id")));
                 t.setSeatNumber(rs.getInt("seat_number"));
-                t.setPercentage(rs.getDouble("percentage"));
+                t.setPrice(rs.getDouble("price"));
+                t.setPromotionDate(rs.getDate("promotion_date"));
                 result.add(t);
             }
             return result;

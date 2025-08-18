@@ -1,6 +1,9 @@
 package model;
 
 import lombok.Setter;
+
+import java.sql.Date;
+
 import lombok.Getter;
 
 @Getter
@@ -13,6 +16,7 @@ public class BookingPassenger {
     private double price;
     private double promotion;
     private String passportFilePath;
+    private int isPaid;
 
 
     /* -------------------------------------------------------------------------- */
