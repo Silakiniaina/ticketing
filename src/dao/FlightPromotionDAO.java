@@ -95,4 +95,63 @@ public class FlightPromotionDAO {
             Database.closeRessources(rs, prstm, c, Boolean.valueOf(isNewConnection));
         }
     }
+
+    public FlightPromotion getNextAfterDate(Connection c, int flightId, int typeSeatId, java.sql.Date date) throws DaoException, SQLException {
+        FlightPromotion result = null;
+        boolean isNewConnection = false;
+        PreparedStatement prstm = null;
+        ResultSet rs = null;
+        String query = "SELECT * FROM flight_seat_promotion WHERE flight_id = ? AND type_seat_id = ? AND promotion_date > ? ORDER BY promotion_date ASC LIMIT 1";
+        try {
+            if (c == null) {
+                c = Database.getActiveConnection();
+                isNewConnection = true;
+            }
+            prstm = c.prepareStatement(query);
+            prstm.setInt(1, flightId);
+            prstm.setInt(2, typeSeatId);
+            prstm.setDate(3, date);
+            rs = prstm.executeQuery();
+            if (rs.next()) {
+                result = new FlightPromotion();
+                result.setFlight(flightDAO.getById(c, rs.getInt("flight_id")));
+                result.setTypeSeat(typeSeatDAO.getById(c, rs.getInt("type_seat_id")));
+                result.setSeatNumber(rs.getInt("seat_number"));
+                result.setPrice(rs.getDouble("price"));
+                result.setPromotionDate(rs.getDate("promotion_date"));
+            }
+            return result;
+        } catch (Exception e) {
+            throw new DaoException(query, e.getMessage());
+        } finally {
+            Database.closeRessources(rs, prstm, c, Boolean.valueOf(isNewConnection));
+        }
+    }
+
+    public void updateSeatNumber(Connection c, FlightPromotion promotion) throws DaoException, SQLException {
+        boolean isNewConnection = false;
+        PreparedStatement prstm = null;
+        String query = "UPDATE flight_seat_promotion SET seat_number = ? WHERE flight_id = ? AND type_seat_id = ? AND promotion_date = ?";
+        try {
+            if (c == null) {
+                c = Database.getActiveConnection();
+                isNewConnection = true;
+            }
+            c.setAutoCommit(false);
+            prstm = c.prepareStatement(query);
+            prstm.setInt(1, promotion.getSeatNumber());
+            prstm.setInt(2, promotion.getFlight().getId());
+            prstm.setInt(3, promotion.getTypeSeat().getId());
+            prstm.setDate(4, promotion.getPromotionDate());
+            int affectedRow = prstm.executeUpdate();
+            if (affectedRow > 0) {
+                c.commit();
+            }
+        } catch (Exception e) {
+            c.rollback();
+            throw new DaoException(query, e.getMessage());
+        } finally {
+            Database.closeRessources(null, prstm, c, Boolean.valueOf(isNewConnection));
+        }
+    }
 }
