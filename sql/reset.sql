@@ -1,0 +1,28 @@
+-- Truncate all tables to remove data
+TRUNCATE TABLE booking_passenger CASCADE;
+TRUNCATE TABLE booking CASCADE;
+TRUNCATE TABLE flight_price_type_seat CASCADE;
+TRUNCATE TABLE user_gender CASCADE;
+TRUNCATE TABLE user_role CASCADE;
+TRUNCATE TABLE flight_seat_promotion CASCADE;
+TRUNCATE TABLE plane_seat CASCADE;
+TRUNCATE TABLE gender CASCADE;
+TRUNCATE TABLE _user_ CASCADE;
+TRUNCATE TABLE flight CASCADE;
+TRUNCATE TABLE plane CASCADE;
+TRUNCATE TABLE type_seat CASCADE;
+TRUNCATE TABLE _role_ CASCADE;
+TRUNCATE TABLE city CASCADE;
+TRUNCATE TABLE reservation_setting CASCADE;
+
+-- Reset all sequences to start from 1
+ALTER SEQUENCE city_id_seq RESTART WITH 1;
+ALTER SEQUENCE _role__id_seq RESTART WITH 1;
+ALTER SEQUENCE type_seat_id_seq RESTART WITH 1;
+ALTER SEQUENCE plane_id_seq RESTART WITH 1;
+ALTER SEQUENCE flight_id_seq RESTART WITH 1;
+ALTER SEQUENCE _user__id_seq RESTART WITH 1;
+ALTER SEQUENCE gender_id_seq RESTART WITH 1;
+ALTER SEQUENCE flight_seat_promotion_id_seq RESTART WITH 1;
+ALTER SEQUENCE booking_id_seq RESTART WITH 1;
+ALTER SEQUENCE booking_passenger_id_seq RESTART WITH 1;
