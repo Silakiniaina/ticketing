@@ -65,12 +65,12 @@ CREATE TABLE plane_seat(
 );
 
 CREATE TABLE flight_seat_promotion(
+   id SERIAL PRIMARY KEY,
    type_seat_id INT,
    flight_id INT,
    price DECIMAL(18,2) DEFAULT 0,
    seat_number INT DEFAULT 0,
    promotion_date DATE DEFAULT NOW(),
-   PRIMARY KEY(type_seat_id, flight_id),
    FOREIGN KEY(type_seat_id) REFERENCES type_seat(id),
    FOREIGN KEY(flight_id) REFERENCES flight(id)
 );
