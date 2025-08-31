@@ -67,6 +67,11 @@ public class BookingPassengerService {
         bookingPassengerDAO.addPassportFilePath(c, bp);
     }
 
+    public List<BookingPassenger> getAllUnpaid() throws DaoException, SQLException, Exception {
+        Connection c = Database.getActiveConnection();
+        return bookingPassengerDAO.getAllUnpaid(c);
+    }
+
     /* -------------------------------------------------------------------------- */
     /*                               Injects values                               */
     /* -------------------------------------------------------------------------- */

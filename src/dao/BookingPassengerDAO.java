@@ -183,4 +183,35 @@ public class BookingPassengerDAO {
             Database.closeRessources(null, prstm, c, Boolean.valueOf(isNewConnection));
         }
     }
+
+    public List<BookingPassenger> getAllUnpaid(Connection c) throws DaoException, SQLException {
+        List<BookingPassenger> result = new ArrayList<>();
+        boolean isNewConnection = false;
+        PreparedStatement prstm = null;
+        ResultSet rs = null;
+        String query = "SELECT * FROM booking_passenger WHERE ispaid = 0";
+        try {
+            if (c == null) {
+                c = Database.getActiveConnection();
+                isNewConnection = true;
+            }
+            prstm = c.prepareStatement(query);
+            rs = prstm.executeQuery();
+            while (rs.next()) {
+                BookingPassenger bp = new BookingPassenger();
+                bp.setId(rs.getInt("id"));
+                bp.setBooking(bookingDAO.getById(c, rs.getInt("booking_id")));
+                bp.setTypeSeat(typeSeatDAO.getById(c, rs.getInt("type_seat_id")));
+                bp.setPrice(rs.getDouble("price"));
+                bp.setPromotion(rs.getDouble("promotion"));
+                bp.setIsPaid(rs.getInt("ispaid"));
+                result.add(bp);
+            }
+            return result;
+        } catch (Exception e) {
+            throw new DaoException(query, e.getMessage());
+        } finally {
+            Database.closeRessources(rs, prstm, c, Boolean.valueOf(isNewConnection));
+        }
+    }
 }
