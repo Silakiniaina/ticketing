@@ -49,6 +49,16 @@ public class FlightPromotionService {
         return flightPromotionDAO.getByFlight(c, flightId);
     }
 
+    public FlightPromotion getNextAfterDate(int flightId, int typeSeatId, Date date) throws DaoException, SQLException, Exception {
+        Connection c = Database.getActiveConnection();
+        return flightPromotionDAO.getNextAfterDate(c, flightId, typeSeatId, date);
+    }
+
+    public void updateSeatNumber(FlightPromotion promotion) throws DaoException, SQLException, Exception {
+        Connection c = Database.getActiveConnection();
+        flightPromotionDAO.updateSeatNumber(c, promotion);
+    }
+
     /* -------------------------------------------------------------------------- */
     /*                                Inject values                               */
     /* -------------------------------------------------------------------------- */
