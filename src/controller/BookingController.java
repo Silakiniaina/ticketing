@@ -1,8 +1,11 @@
 package controller;
 
+import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
+import dao.CleanupArg;
 import dto.BookingDateArg;
 import dto.BookingPassengerArg;
 import dto.BookingPassengerPaymentArg;
@@ -22,10 +25,12 @@ import mg.dash.mvc.util.FileUtils;
 import model.Booking;
 import model.BookingPassenger;
 import model.Flight;
+import model.FlightPromotion;
 import model.TypeSeat;
 import model.User;
 import service.BookingPassengerService;
 import service.BookingService;
+import service.FlightPromotionService;
 import service.FlightService;
 import service.TypeSeatService;
 import service.UserService;
@@ -42,6 +47,7 @@ public class BookingController {
     private final UserService userService;
     private final TypeSeatService typeSeatService;
     private final BookingPassengerService bookingPassengerService;
+    private final FlightPromotionService flightPromotionService;
 
     /* -------------------------------------------------------------------------- */
     /*                                 Constructor                                */
@@ -52,6 +58,7 @@ public class BookingController {
         this.userService = new UserService();
         this.typeSeatService = new TypeSeatService();
         this.bookingPassengerService = new BookingPassengerService();
+        this.flightPromotionService = new FlightPromotionService();
     }
     
     /* -------------------------------------------------------------------------- */
@@ -355,6 +362,42 @@ public class BookingController {
                 mv.addObject("error", "Unexpected error: " + ex.getMessage());
                 mv.setRedirect(false);
             }
+        }
+        return mv;
+    }
+
+    @Get
+    @Url("/bookings/cleanup")
+    public ModelView cleanUp(@RequestParam("cleanup") CleanupArg arg) {
+        ModelView mv = new ModelView("/ticketing/user/bookings");
+        mv.setRedirect(true);
+        try {
+            Date sqlDate = Date.valueOf(LocalDate.parse(arg.getDate()));
+            List<BookingPassenger> unpaidPassengers = bookingPassengerService.getAllUnpaid();
+            for (BookingPassenger bp : unpaidPassengers) {
+                int flightId = bp.getBooking().getFlight().getId();
+                int typeSeatId = bp.getTypeSeat().getId();
+                int bookingId = bp.getBooking().getId();
+                FlightPromotion nextPromotion = flightPromotionService.getNextAfterDate(flightId, typeSeatId, sqlDate);
+                if (nextPromotion != null) {
+                    nextPromotion.setSeatNumber(nextPromotion.getSeatNumber() + 1);
+                    flightPromotionService.updateSeatNumber(nextPromotion);
+                }
+                bookingService.cancelBooking(bookingId);
+            }
+            mv.addObject("success", "Cleanup completed successfully");
+        } catch (NumberFormatException nfe) {
+            mv.addObject("error", "Invalid date format: " + nfe.getMessage());
+            mv.setRedirect(false);
+        } catch (DaoException daoEx) {
+            mv.addObject("error", "Error on DAO: " + daoEx.getMessage());
+            mv.setRedirect(false);
+        } catch (SQLException sqlEx) {
+            mv.addObject("error", "Error on SQL: " + sqlEx.getMessage());
+            mv.setRedirect(false);
+        } catch (Exception ex) {
+            mv.addObject("error", "Unexpected error: " + ex.getMessage());
+            mv.setRedirect(false);
         }
         return mv;
     }
